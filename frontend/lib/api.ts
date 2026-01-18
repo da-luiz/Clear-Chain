@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-// Base URL for the Spring Boot backend (HTTP)
-const API_BASE_URL = 'http://localhost:8080/api';
+// Base URL for the Spring Boot backend
+// Use environment variable in production, fallback to localhost for development
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
 // Create axios instance with default config
 // Note: In browser environment, we can't set httpsAgent
