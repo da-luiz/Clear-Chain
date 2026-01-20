@@ -4,3 +4,6 @@ ALTER TABLE contracts ADD COLUMN currency VARCHAR(10);
 
 
 
+
+
+

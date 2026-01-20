@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Clear Chain - Streamline your vendor management process with enterprise-grade workflow automation, compliance tracking, and seamless integration.">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Clear Chain - Vendor Management System">
+    <meta property="og:description" content="Streamline your vendor management process with enterprise-grade workflow automation.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://<domain>.com">
+    
+    <title>Clear Chain - Vendor Management System</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #fff;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        header {
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        nav {
+            padding: 1rem 0;
+        }
+        
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 4rem 0;
+        }
+        
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            padding: 2rem;
+            background: #f9fafb;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .feature-card h3 {
+            color: #2563eb;
+            margin-bottom: 1rem;
+        }
+        
+        /* How It Works */
+        .how-it-works {
+            background: #f9fafb;
+            padding: 4rem 0;
+        }
+        
+        .how-it-works h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .step {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
+        .step-number {
+            background: #2563eb;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        /* Security Section */
+        .security {
+            padding: 4rem 0;
+        }
+        
+        .security h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .security p {
+            text-align: center;
+            font-size: 1.125rem;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+        
+        .security-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .security-feature {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
+        /* Footer */
+        footer {
+            background: #1f2937;
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 1rem;
+        }
+        
+        .footer-section p,
+        .footer-section a {
+            color: #9ca3af;
+            text-decoration: none;
+        }
+        
+        .footer-section a:hover {
+            color: white;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #374151;
+            color: #9ca3af;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">Clear Chain</div>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Clear Chain</h1>
+            <p>Streamline your vendor management process with enterprise-grade workflow automation, compliance tracking, and seamless integration.</p>
+            <a href="https://app.<domain>.com" class="cta-button">Get Started</a>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <h2>Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>🔐 Secure Authentication</h3>
+                    <p>Enterprise-grade authentication with Azure Entra ID SSO integration and role-based access control.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 Vendor Workflow</h3>
+                    <p>Complete approval workflow: Compliance → Finance → Admin review with document management.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💰 Contract Management</h3>
+                    <p>Create, track, and manage vendor contracts with multi-currency support and approval workflows.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 Purchase Orders</h3>
+                    <p>Manage purchase orders end-to-end with status tracking and vendor integration.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 Dashboard & Analytics</h3>
+                    <p>Real-time insights and statistics for vendor performance and system activity.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔍 Document Management</h3>
+                    <p>Upload and manage vendor documents with secure file storage and access controls.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works">
+        <div class="container">
+            <h2>How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Request Vendor</h3>
+                    <p>Department requester creates a vendor request with company details and supporting documents.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Compliance Review</h3>
+                    <p>Compliance officer reviews vendor documentation and verifies regulatory requirements.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Finance Approval</h3>
+                    <p>Finance team adds banking details and approves vendor for contract creation.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Admin Final Approval</h3>
+                    <p>Administrator provides final approval and vendor is activated in the system.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="security">
+        <div class="container">
+            <h2>Security & Compliance</h2>
+            <p>Built with enterprise security in mind. Clear Chain integrates with Azure Entra ID for single sign-on (SSO) and uses role-based access control (RBAC) to ensure users have appropriate permissions.</p>
+            <div class="security-features">
+                <div class="security-feature">
+                    <h3>🔒 Azure Entra ID SSO</h3>
+                    <p>Secure authentication with Microsoft Azure Entra ID</p>
+                </div>
+                <div class="security-feature">
+                    <h3>👥 Role-Based Access</h3>
+                    <p>Groups and roles mapped to Spring Security permissions</p>
+                </div>
+                <div class="security-feature">
+                    <h3>🛡️ Cloudflare Protection</h3>
+                    <p>DDoS protection, WAF, and TLS encryption</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Clear Chain</h3>
+                    <p>Enterprise vendor management system for streamlined workflows and compliance.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Product</h3>
+                    <p><a href="https://app.<domain>.com">Application</a></p>
+                    <p><a href="https://app.<domain>.com/login">Login</a></p>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p>Email: support@<domain>.com</p>
+                    <p>Phone: +1 (555) 123-4567</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Clear Chain. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
+

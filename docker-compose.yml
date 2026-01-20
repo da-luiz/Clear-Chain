@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: clear-chain-app
+    restart: unless-stopped
+    ports:
+      # Bind only to localhost - not publicly accessible
+      - "127.0.0.1:8080:8080"
+    environment:
+      # Profile
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
+      
+      # OAuth2 Google (optional - set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to enable)
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      
+      # OAuth2 GitHub (optional - set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET to enable)
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
+      
+      # Azure Entra ID (optional - set AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET to enable)
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID:-}
+      - AZURE_CLIENT_ID=${AZURE_CLIENT_ID:-}
+      - AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET:-}
+      
+      # OAuth2 Azure configuration (only if Azure credentials are provided)
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_AZURE_CLIENT_ID=${AZURE_CLIENT_ID:-}
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET:-}
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_AZURE_SCOPE=openid,profile,email
+      
+      # Database (PostgreSQL recommended for production)
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - SPRING_DATASOURCE_DRIVER=${SPRING_DATASOURCE_DRIVER:-org.postgresql.Driver}
+      - SPRING_JPA_DATABASE_PLATFORM=${SPRING_JPA_DATABASE_PLATFORM:-org.hibernate.dialect.PostgreSQLDialect}
+      
+      # JWT
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION:-86400}
+      
+      # Server
+      - SERVER_PORT=8080
+      
+      # Logging (production)
+      - SPRING_JPA_SHOW_SQL=false
+      - SPRING_JPA_FORMAT_SQL=false
+      - LOGGING_LEVEL_ROOT=INFO
+      
+    volumes:
+      # File uploads directory (persist across container restarts)
+      - ./uploads:/app/uploads
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
+
+networks:
+  app-network:
+    driver: bridge
+
+

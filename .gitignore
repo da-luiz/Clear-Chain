@@ -47,3 +47,8 @@ yarn-error.log*
 ### Uploads / Temporary Files ###
 uploads/
 *.log
+
+### Local Configuration (contains secrets) ###
+application-local.properties
+.env
+.env.local

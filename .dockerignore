@@ -1,0 +1,17 @@
+node_modules
+frontend
+.git
+.gitignore
+*.md
+.idea
+.vscode
+build
+.gradle
+*.iml
+*.log
+uploads
+.next
+
+
+
+

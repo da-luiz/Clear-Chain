@@ -4,12 +4,10 @@ import com.vms.vendor_management_system.domain.entity.User;
 import com.vms.vendor_management_system.domain.enums.UserRole;
 import com.vms.vendor_management_system.domain.repository.UserRepository;
 import com.vms.vendor_management_system.domain.valueobjects.Email;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,12 +27,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
-    private final UserDetailsService userDetailsService;
+    
+    @Autowired(required = false)
+    private AzureEntraRoleMapper azureEntraRoleMapper;
 
-    public OAuth2SuccessHandler(UserRepository userRepository, JwtUtil jwtUtil, UserDetailsService userDetailsService) {
+    public OAuth2SuccessHandler(UserRepository userRepository, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
-        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -60,14 +58,15 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             return;
         }
         
-        // Find or create user
-        User user = findOrCreateUser(registrationId.toUpperCase(), oauthId, email, firstName, lastName, imageUrl);
+        // Find or create user (with Azure role mapping if Azure provider)
+        User user = findOrCreateUser(registrationId.toUpperCase(), oauthId, email, firstName, lastName, imageUrl, attributes);
         
         // Generate JWT token
         String token = jwtUtil.generateToken(user.getUsername());
         
-        // Build redirect URL with token
-        String redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/auth/callback")
+        // Build redirect URL with token (use environment variable for production)
+        String frontendUrl = System.getenv().getOrDefault("FRONTEND_URL", "http://localhost:3000");
+        String redirectUrl = UriComponentsBuilder.fromUriString(frontendUrl + "/auth/callback")
                 .queryParam("token", token)
                 .queryParam("username", user.getUsername())
                 .queryParam("role", user.getRole().name())
@@ -80,11 +79,22 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
     
-    private User findOrCreateUser(String provider, String oauthId, String email, String firstName, String lastName, String imageUrl) {
+    private User findOrCreateUser(String provider, String oauthId, String email, String firstName, String lastName, String imageUrl, Map<String, Object> attributes) {
         // First, try to find by OAuth provider and ID
         Optional<User> existingOAuthUser = userRepository.findByOauthProviderAndOauthId(provider, oauthId);
         if (existingOAuthUser.isPresent()) {
             User user = existingOAuthUser.get();
+            
+            // Update role from Azure mapping if Azure provider (role sync)
+            if ("AZURE".equalsIgnoreCase(provider) && azureEntraRoleMapper != null) {
+                java.util.Set<UserRole> mappedRoles = azureEntraRoleMapper.mapClaimsToRoles(attributes);
+                if (!mappedRoles.isEmpty()) {
+                    // Sync role from Entra (roles may have changed in Entra)
+                    UserRole newRole = mappedRoles.iterator().next();
+                    user.setRole(newRole);
+                }
+            }
+            
             user.setImageUrl(imageUrl);
             user.updateLastLogin();
             return userRepository.save(user);
@@ -95,6 +105,17 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         if (existingEmailUser.isPresent()) {
             User user = existingEmailUser.get();
             // Link OAuth to existing account
+            
+            // Update role from Azure mapping if Azure provider
+            if ("AZURE".equalsIgnoreCase(provider) && azureEntraRoleMapper != null) {
+                java.util.Set<UserRole> mappedRoles = azureEntraRoleMapper.mapClaimsToRoles(attributes);
+                if (!mappedRoles.isEmpty()) {
+                    // Update role from Entra mapping (or keep existing if mapping fails)
+                    UserRole newRole = mappedRoles.iterator().next();
+                    user.setRole(newRole);
+                }
+            }
+            
             user.setOauthProvider(provider);
             user.setOauthId(oauthId);
             user.setImageUrl(imageUrl);
@@ -104,12 +125,23 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         
         // Create new user from OAuth
         String username = generateUsername(email, firstName, lastName);
+        
+        // Map Azure Entra groups/roles to Spring Security roles (if Azure provider)
+        UserRole assignedRole = UserRole.DEPARTMENT_REQUESTER; // Default
+        if ("AZURE".equalsIgnoreCase(provider) && azureEntraRoleMapper != null) {
+            java.util.Set<UserRole> mappedRoles = azureEntraRoleMapper.mapClaimsToRoles(attributes);
+            if (!mappedRoles.isEmpty()) {
+                // Use the first mapped role (or could use highest privilege)
+                assignedRole = mappedRoles.iterator().next();
+            }
+        }
+        
         User newUser = new User(
             username,
             firstName != null ? firstName : "User",
             lastName != null ? lastName : "Name",
             new Email(email),
-            UserRole.DEPARTMENT_REQUESTER, // Default role for OAuth users
+            assignedRole,
             null // No department by default
         );
         newUser.setOauthProvider(provider);
@@ -145,6 +177,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 return attributes.get("login") + "@users.noreply.github.com";
             }
             return email;
+        } else if ("azure".equals(provider)) {
+            // Azure Entra ID uses "email" or "upn" (User Principal Name)
+            return (String) attributes.getOrDefault("email", attributes.get("upn"));
         }
         return (String) attributes.getOrDefault("email", attributes.get("emailAddress"));
     }
@@ -167,6 +202,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             return (String) attributes.get("sub");
         } else if ("github".equals(provider)) {
             return String.valueOf(attributes.get("id"));
+        } else if ("azure".equals(provider)) {
+            // Azure Entra ID uses "oid" (Object ID) or "sub" (Subject)
+            return (String) attributes.getOrDefault("oid", attributes.get("sub"));
         }
         return (String) attributes.getOrDefault("sub", attributes.get("id"));
     }
@@ -176,6 +214,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             return (String) attributes.get("picture");
         } else if ("github".equals(provider)) {
             return (String) attributes.get("avatar_url");
+        } else if ("azure".equals(provider)) {
+            // Azure might not include profile picture by default
+            // Could use Microsoft Graph API to fetch profile photo if needed
+            return null; // No profile picture in default Azure token
         }
         return (String) attributes.getOrDefault("picture", attributes.get("avatar_url"));
     }

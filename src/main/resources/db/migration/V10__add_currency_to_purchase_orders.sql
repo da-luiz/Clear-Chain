@@ -4,3 +4,6 @@ ALTER TABLE purchase_orders ADD COLUMN currency VARCHAR(10);
 
 
 
+
+
+

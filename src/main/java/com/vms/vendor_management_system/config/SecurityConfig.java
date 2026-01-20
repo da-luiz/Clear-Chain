@@ -42,12 +42,14 @@ public class SecurityConfig {
                 .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                 // ALL other endpoints are public - no authentication required
                 .anyRequest().permitAll()
-            )
-            // Enable OAuth2 login
-            .oauth2Login(oauth2 -> oauth2
-                .successHandler(oAuth2SuccessHandler)
-                .permitAll()
             );
+
+        // Always enable OAuth2 login - will work if credentials are in application-local.properties
+        // or environment variables. If no credentials, EmptyClientRegistrationRepository handles it.
+        http.oauth2Login(oauth2 -> oauth2
+            .successHandler(oAuth2SuccessHandler)
+            .permitAll()
+        );
 
         return http.build();
     }
