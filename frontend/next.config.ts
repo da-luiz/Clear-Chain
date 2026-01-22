@@ -6,11 +6,8 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return []
   },
-  // Disable Turbopack to use traditional webpack mode
-  // This prevents the "Next.js package not found" panic errors
-  experimental: {
-    turbo: false,
-  },
+  // Output configuration for standalone deployment
+  output: 'standalone',
 }
 
 export default nextConfig
