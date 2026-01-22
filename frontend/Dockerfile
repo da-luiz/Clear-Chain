@@ -11,8 +11,8 @@ COPY next.config.js ./
 COPY tailwind.config.ts ./
 COPY postcss.config.js ./
 
-# Install dependencies
-RUN npm ci
+# Install dependencies (use npm install to handle lock file mismatches)
+RUN npm install
 
 # Copy source code
 COPY . .
