@@ -35,7 +35,7 @@ COPY --from=builder /app/next.config.ts ./
 COPY --from=builder /app/next.config.js ./
 
 # Install only production dependencies
-RUN npm ci --only=production
+RUN npm install --only=production
 
 EXPOSE 3000
 
