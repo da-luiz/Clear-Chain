@@ -2,7 +2,12 @@ import axios from 'axios';
 
 // Base URL for the Spring Boot backend
 // Use environment variable in production, fallback to localhost for development
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+// In production, this will be https://app.clearchain.space/api (set via NEXT_PUBLIC_API_URL)
+// In development, use http://localhost:8080/api
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
+  (typeof window !== 'undefined' && window.location.origin === 'https://app.clearchain.space' 
+    ? 'https://app.clearchain.space/api' 
+    : 'http://localhost:8080/api');
 
 // Create axios instance with default config
 // Note: In browser environment, we can't set httpsAgent
