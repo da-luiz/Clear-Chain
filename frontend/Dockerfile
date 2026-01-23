@@ -17,6 +17,9 @@ RUN npm install
 # Copy source code
 COPY . .
 
+# Ensure public directory exists (Next.js may need it)
+RUN mkdir -p public && touch public/.gitkeep
+
 # Build Next.js app
 RUN npm run build
 
@@ -29,6 +32,7 @@ ENV NODE_ENV=production
 
 # Copy built application
 COPY --from=builder /app/.next ./.next
+# Copy public directory (will be empty if no files, but directory exists)
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/next.config.ts ./
