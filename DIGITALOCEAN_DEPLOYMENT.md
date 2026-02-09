@@ -43,6 +43,66 @@ Browser → Cloudflare (proxy, WAF, TLS) → Nginx (host) → Spring Boot (Docke
 - Azure Entra ID admin access (to create app registration)
 - Cloudflare account with domain added
 
+### 0.1 Setup SSH Keys (IMPORTANT - Do This First!)
+
+**Before creating the droplet, set up your SSH keys properly:**
+
+1. **Check if you already have SSH keys:**
+```bash
+ls -la ~/.ssh/
+```
+
+2. **If you don't have keys, generate a new one:**
+```bash
+ssh-keygen -t ed25519 -C "your_email@example.com" -f ~/.ssh/digitalocean_key
+# Press Enter to accept default location, or specify a custom name
+# You can leave passphrase empty for easier access (or set one for security)
+```
+
+3. **Set correct permissions:**
+```bash
+chmod 600 ~/.ssh/digitalocean_key
+chmod 644 ~/.ssh/digitalocean_key.pub
+```
+
+4. **Display your public key (you'll need this for DigitalOcean):**
+```bash
+cat ~/.ssh/digitalocean_key.pub
+```
+
+5. **Copy the entire output** - it should look like:
+```
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... your_email@example.com
+```
+
+6. **Add this public key to DigitalOcean:**
+   - Go to DigitalOcean Dashboard → **Settings** → **Security** → **SSH Keys**
+   - Click **Add SSH Key**
+   - Paste your public key
+   - Give it a name (e.g., "Fedora Laptop")
+   - Click **Add SSH Key**
+
+7. **Create SSH config for easy access (optional but recommended):**
+```bash
+cat >> ~/.ssh/config << 'EOF'
+Host clear-chain-vps
+    HostName YOUR_DROPLET_IP
+    User root
+    IdentityFile ~/.ssh/digitalocean_key
+    IdentitiesOnly yes
+    StrictHostKeyChecking no
+EOF
+
+chmod 600 ~/.ssh/config
+```
+
+**After creating the droplet, you can connect with:**
+```bash
+ssh clear-chain-vps
+# Or if you didn't create the config:
+ssh -i ~/.ssh/digitalocean_key root@YOUR_DROPLET_IP
+```
+
 ---
 
 ## 1. DigitalOcean Droplet Setup
@@ -66,10 +126,22 @@ Browser → Cloudflare (proxy, WAF, TLS) → Nginx (host) → Spring Boot (Docke
 
 ### 1.2 Initial Server Setup
 
-Connect to server:
+**Connect to server:**
+
+If you created the SSH config (recommended):
 ```bash
-ssh root@<DROPLET_IP>
+ssh clear-chain-vps
 ```
+
+Or if you didn't create the config:
+```bash
+ssh -i ~/.ssh/digitalocean_key root@<DROPLET_IP>
+```
+
+**If connection fails:**
+- Make sure your public key was added to DigitalOcean before creating the droplet
+- Verify key permissions: `chmod 600 ~/.ssh/digitalocean_key`
+- Check that you selected the correct SSH key when creating the droplet
 
 #### Create Deploy User
 ```bash
@@ -339,10 +411,21 @@ sudo nano /etc/ssl/private/cf-origin.key
 # Save and exit: Ctrl+X, then Y, then Enter
 
 # Set permissions
+# Certificate (public) - readable by all
 sudo chmod 644 /etc/ssl/certs/cf-origin.pem
-sudo chmod 600 /etc/ssl/private/cf-origin.key
 sudo chown root:root /etc/ssl/certs/cf-origin.pem
-sudo chown root:root /etc/ssl/private/cf-origin.key
+
+# Private key permissions
+# If Nginx is already installed (creates nginx user/group automatically):
+sudo chmod 640 /etc/ssl/private/cf-origin.key
+sudo chown root:nginx /etc/ssl/private/cf-origin.key
+
+# If Nginx is NOT installed yet, use root:root temporarily:
+# sudo chmod 600 /etc/ssl/private/cf-origin.key
+# sudo chown root:root /etc/ssl/private/cf-origin.key
+# Then after installing Nginx (section 4.1), update permissions:
+# sudo chmod 640 /etc/ssl/private/cf-origin.key
+# sudo chown root:nginx /etc/ssl/private/cf-origin.key
 ```
 
 ### 3.6 Configure Protection (Optional but Recommended)
@@ -667,7 +750,8 @@ AZURE_CLIENT_ID=your-client-id
 AZURE_CLIENT_SECRET=your-client-secret
 
 # Database (PostgreSQL recommended)
-SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/vendor_db
+# Note: Use host.docker.internal instead of localhost when app runs in Docker
+SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/vendor_db
 SPRING_DATASOURCE_USERNAME=vendor_user
 SPRING_DATASOURCE_PASSWORD=secure-password-here
 SPRING_DATASOURCE_DRIVER=org.postgresql.Driver

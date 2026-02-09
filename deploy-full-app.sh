@@ -43,6 +43,17 @@ sudo cp nginx-app.conf /etc/nginx/conf.d/app.conf
 sudo nginx -t && sudo systemctl reload nginx
 
 echo ""
+echo "7. Updating landing page (clearchain.space)..."
+if [ -d "deployment/landing" ]; then
+  sudo cp -r deployment/landing/* /var/www/landing/ 2>/dev/null || true
+  sudo chown -R root:root /var/www/landing 2>/dev/null || true
+  sudo chmod -R 755 /var/www/landing 2>/dev/null || true
+  echo "   Landing page files (index.html, logo.svg, images/) copied to /var/www/landing"
+else
+  echo "   Skipped (deployment/landing not found)"
+fi
+
+echo ""
 echo "=========================================="
 echo "Deployment complete!"
 echo "=========================================="

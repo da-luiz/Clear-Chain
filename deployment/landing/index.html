@@ -9,9 +9,10 @@
     <meta property="og:title" content="Clear Chain - Vendor Management System">
     <meta property="og:description" content="Streamline your vendor management process with enterprise-grade workflow automation.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://<domain>.com">
+    <meta property="og:url" content="https://clearchain.space">
     
     <title>Clear Chain - Vendor Management System</title>
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
     
     <style>
         * {
@@ -55,41 +56,114 @@
         .logo {
             font-size: 1.5rem;
             font-weight: bold;
-            color: #2563eb;
+            color: #2e7d32;
+        }
+        
+        .logo-img {
+            height: 40px;
+            width: auto;
+            display: block;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover {
+            color: #2e7d32;
+        }
+        
+        .nav-cta {
+            background: #2e7d32;
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+        }
+        
+        .nav-cta:hover {
+            background: #1b5e20;
+            color: white !important;
         }
         
         /* Hero Section */
         .hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, #d4edda 0%, #ffffff 50%, #c3e6cb 100%);
+            color: #1a1a1a;
             padding: 4rem 0;
-            text-align: center;
+        }
+        
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .hero-content {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.8s ease forwards;
+        }
+        
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .hero-image-wrap {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .hero-image-wrap img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
         }
         
         .hero h1 {
             font-size: 3rem;
             margin-bottom: 1rem;
+            color: #2d5016;
         }
         
         .hero p {
             font-size: 1.25rem;
             margin-bottom: 2rem;
-            opacity: 0.9;
+            color: #333;
+            opacity: 0.95;
         }
         
         .cta-button {
             display: inline-block;
-            background: white;
-            color: #667eea;
+            background: #2e7d32;
+            color: white;
             padding: 1rem 2rem;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 8px;
             font-weight: bold;
-            transition: transform 0.2s;
+            transition: transform 0.2s, background 0.2s;
         }
         
         .cta-button:hover {
             transform: translateY(-2px);
+            background: #1b5e20;
         }
         
         /* Features Section */
@@ -111,13 +185,19 @@
         
         .feature-card {
             padding: 2rem;
-            background: #f9fafb;
+            background: #f1f8e9;
             border-radius: 8px;
             text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(46, 125, 50, 0.15);
         }
         
         .feature-card h3 {
-            color: #2563eb;
+            color: #2e7d32;
             margin-bottom: 1rem;
         }
         
@@ -145,7 +225,7 @@
         }
         
         .step-number {
-            background: #2563eb;
+            background: #2e7d32;
             color: white;
             width: 50px;
             height: 50px;
@@ -226,6 +306,15 @@
         
         /* Responsive */
         @media (max-width: 768px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .hero-image-wrap {
+                order: -1;
+            }
+            
             .hero h1 {
                 font-size: 2rem;
             }
@@ -239,21 +328,35 @@
 <body>
     <header>
         <nav>
-            <div class="container">
-                <div class="logo">Clear Chain</div>
-            </div>
-        </nav>
+    <div class="container">
+        <a href="#"><img src="logo.svg" alt="Clear Chain" class="logo-img" /></a>
+        <div class="nav-links">
+            <a href="#features">Products</a>
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#security">Security</a>
+            <a href="https://app.clearchain.space/login">Login</a>
+            <a href="https://app.clearchain.space" class="nav-cta">Get Started</a>
+        </div>
+    </div>
+</nav>
+
     </header>
 
     <section class="hero">
-        <div class="container">
-            <h1>Clear Chain</h1>
-            <p>Streamline your vendor management process with enterprise-grade workflow automation, compliance tracking, and seamless integration.</p>
-            <a href="https://app.<domain>.com" class="cta-button">Get Started</a>
+        <div class="hero-grid">
+            <div class="hero-content">
+                <h1>Clear Chain</h1>
+                <p>Streamline your vendor management process with enterprise-grade workflow automation, compliance tracking, and seamless integration.</p>
+                <a href="https://app.clearchain.space" class="cta-button">Get Started</a>
+            </div>
+            <div class="hero-image-wrap">
+                <img src="images/hero.svg" alt="Vendor management dashboard" onerror="this.style.display='none'">
+            </div>
         </div>
     </section>
 
-    <section class="features">
+    <section id="features" class="features">
         <div class="container">
             <h2>Features</h2>
             <div class="features-grid">
@@ -285,7 +388,7 @@
         </div>
     </section>
 
-    <section class="how-it-works">
+    <section id="how-it-works" class="how-it-works">
         <div class="container">
             <h2>How It Works</h2>
             <div class="steps">
@@ -313,7 +416,7 @@
         </div>
     </section>
 
-    <section class="security">
+    <section id="security" class="security">
         <div class="container">
             <h2>Security & Compliance</h2>
             <p>Built with enterprise security in mind. Clear Chain integrates with Azure Entra ID for single sign-on (SSO) and uses role-based access control (RBAC) to ensure users have appropriate permissions.</p>
@@ -343,12 +446,12 @@
                 </div>
                 <div class="footer-section">
                     <h3>Product</h3>
-                    <p><a href="https://app.<domain>.com">Application</a></p>
-                    <p><a href="https://app.<domain>.com/login">Login</a></p>
+                    <p><a href="https://app.clearchain.space">Application</a></p>
+                    <p><a href="https://app.clearchain.space/login">Login</a></p>
                 </div>
                 <div class="footer-section">
                     <h3>Contact</h3>
-                    <p>Email: support@<domain>.com</p>
+                    <p>Email: support@clearchain.space</p>
                     <p>Phone: +1 (555) 123-4567</p>
                 </div>
             </div>
