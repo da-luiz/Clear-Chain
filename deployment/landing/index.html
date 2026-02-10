@@ -28,7 +28,7 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
-            color: #333;
+            color: #0a0a0a;
             background: #fff;
         }
         
@@ -38,22 +38,22 @@
             padding: 0 20px;
         }
         
-        /* Top tagline bar */
+        /* Top tagline bar - black / white / lemon */
         .top-tagline {
-            background: #f0fdf4;
+            background: #fff;
             text-align: center;
             padding: 0.5rem 1rem;
             font-size: 0.875rem;
             font-weight: 600;
-            color: #15803d;
+            color: #0a0a0a;
             letter-spacing: 0.02em;
-            border-bottom: 1px solid #bbf7d0;
+            border-bottom: 1px solid #e5e5e5;
         }
         
         /* Header */
         header {
             background: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -67,16 +67,17 @@
             display: flex;
             justify-content: flex-start;
             align-items: center;
+            padding-left: 0;
         }
         
         .logo {
             font-size: 1.5rem;
             font-weight: bold;
-            color: #16a34a;
+            color: #84cc16;
         }
         
         .logo-img {
-            height: 72px;
+            height: 96px;
             width: auto;
             display: block;
         }
@@ -86,11 +87,11 @@
             align-items: center;
             gap: 1.75rem;
             list-style: none;
-            margin-left: 3rem;
+            margin-left: 4rem;
         }
         
         .nav-links a {
-            color: #333;
+            color: #0a0a0a;
             text-decoration: none;
             font-weight: 500;
             font-size: 0.95rem;
@@ -98,14 +99,16 @@
         }
         
         .nav-links a:hover {
-            color: #16a34a;
+            color: #84cc16;
         }
         
-        /* Hero Section */
+        /* Hero Section - white with subtle lemon tint */
         .hero {
-            background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 50%, #bbf7d0 100%);
-            color: #1a1a1a;
+            background: linear-gradient(135deg, #f7fee7 0%, #ffffff 50%, #ecfccb 100%);
+            color: #0a0a0a;
             padding: 5rem 0;
+            position: relative;
+            overflow: hidden;
         }
         
         .hero-grid {
@@ -116,6 +119,8 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
+            position: relative;
+            z-index: 1;
         }
         
         .hero-content {
@@ -146,7 +151,7 @@
             object-fit: cover;
             object-position: center;
             border-radius: 8px;
-            box-shadow: 0 20px 50px rgba(22, 163, 74, 0.2);
+            box-shadow: 0 20px 50px rgba(132, 204, 22, 0.15);
         }
         
         .logo-link {
@@ -157,20 +162,20 @@
         .hero h1 {
             font-size: 3rem;
             margin-bottom: 1rem;
-            color: #15803d;
+            color: #0a0a0a;
         }
         
         .hero p {
             font-size: 1.25rem;
             margin-bottom: 2rem;
-            color: #333;
+            color: #525252;
             opacity: 0.95;
         }
         
         .cta-button {
             display: inline-block;
-            background: #16a34a;
-            color: white;
+            background: #84cc16;
+            color: #0a0a0a;
             padding: 1rem 2rem;
             text-decoration: none;
             border-radius: 8px;
@@ -180,7 +185,7 @@
         
         .cta-button:hover {
             transform: translateY(-2px);
-            background: #15803d;
+            background: #65a30d;
         }
         
         /* Features Section */
@@ -193,7 +198,7 @@
             text-align: center;
             font-size: 2.5rem;
             margin-bottom: 3rem;
-            color: #15803d;
+            color: #0a0a0a;
         }
         
         .features-grid {
@@ -208,8 +213,8 @@
             border-radius: 12px;
             text-align: center;
             transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
-            border: 1px solid #bbf7d0;
-            box-shadow: 0 2px 12px rgba(22, 163, 74, 0.08);
+            border: 1px solid #e5e5e5;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
             min-height: 180px;
             display: flex;
             flex-direction: column;
@@ -218,7 +223,8 @@
         
         .feature-card:hover {
             transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 16px 40px rgba(22, 163, 74, 0.15);
+            box-shadow: 0 16px 40px rgba(132, 204, 22, 0.12);
+            border-color: #84cc16;
         }
         
         .feature-card.reveal.visible {
@@ -226,21 +232,21 @@
         }
         
         .feature-card h3 {
-            color: #16a34a;
+            color: #0a0a0a;
             margin-bottom: 0.75rem;
             font-size: 1.15rem;
         }
         
         .feature-card p {
             font-size: 0.95rem;
-            color: #555;
+            color: #525252;
             line-height: 1.5;
             margin: 0;
         }
         
         /* How It Works - seamless cards */
         .how-it-works {
-            background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+            background: #fff;
             padding: 4rem 0;
         }
         
@@ -249,7 +255,7 @@
             text-align: center;
             font-size: 2.5rem;
             margin-bottom: 3rem;
-            color: #15803d;
+            color: #0a0a0a;
         }
         
         .steps {
@@ -268,14 +274,15 @@
             padding: 1.75rem 1.25rem;
             background: #fff;
             border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(22, 163, 74, 0.08);
-            border: 1px solid #bbf7d0;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e5e5;
             transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
         }
         
         .step-card:hover {
             transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 12px 28px rgba(22, 163, 74, 0.15);
+            box-shadow: 0 12px 28px rgba(132, 204, 22, 0.12);
+            border-color: #84cc16;
         }
         
         .step-card.reveal.visible {
@@ -284,28 +291,28 @@
         
         .step-card h3 {
             font-size: 1.1rem;
-            color: #16a34a;
+            color: #0a0a0a;
             margin-bottom: 0.75rem;
             line-height: 1.3;
         }
         
         .step-card p {
             font-size: 0.9rem;
-            color: #555;
+            color: #525252;
             line-height: 1.5;
             margin: 0;
         }
         
         .step-arrow {
             align-self: center;
-            color: #16a34a;
+            color: #84cc16;
             font-size: 1.5rem;
             font-weight: bold;
         }
         
         .step-number {
-            background: #16a34a;
-            color: white;
+            background: #84cc16;
+            color: #0a0a0a;
             width: 48px;
             height: 48px;
             border-radius: 50%;
@@ -326,12 +333,13 @@
             text-align: center;
             font-size: 2.5rem;
             margin-bottom: 1rem;
+            color: #0a0a0a;
         }
         
         .security p {
             text-align: center;
             font-size: 1.125rem;
-            color: #666;
+            color: #525252;
             max-width: 800px;
             margin: 0 auto 2rem;
         }
@@ -348,10 +356,10 @@
             padding: 1.5rem;
         }
         
-        /* Footer - dark green to match page */
+        /* Footer - black */
         footer {
-            background: #14532d;
-            color: white;
+            background: #0a0a0a;
+            color: #fff;
             padding: 3rem 0 1rem;
         }
         
@@ -364,24 +372,24 @@
         
         .footer-section h3 {
             margin-bottom: 1rem;
-            color: #f0fdf4;
+            color: #fff;
         }
         
         .footer-section p,
         .footer-section a {
-            color: #bbf7d0;
+            color: #a3a3a3;
             text-decoration: none;
         }
         
         .footer-section a:hover {
-            color: #f0fdf4;
+            color: #84cc16;
         }
         
         .footer-bottom {
             text-align: center;
             padding-top: 2rem;
-            border-top: 1px solid #166534;
-            color: #86efac;
+            border-top: 1px solid #262626;
+            color: #737373;
         }
         
         /* Scroll-triggered reveal (Precoro-style) */
@@ -459,6 +467,27 @@
                 margin-left: 1.5rem;
             }
         }
+        /* Top-right decorative graph/C-shape - fades into white */
+        .hero-deco {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 55%;
+            max-width: 700px;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .hero-deco svg {
+            position: absolute;
+            top: -10%;
+            right: -5%;
+            width: 100%;
+            height: 120%;
+            opacity: 0.45;
+        }
+        
     </style>
 </head>
 <body>
@@ -470,18 +499,37 @@
                     <img src="logo.svg?v=4" alt="ClearChain" class="logo-img" />
                 </a>
                 <div class="nav-links">
-                    <a href="#features">Products</a>
+                    <a href="https://app.clearchain.space/login">Products</a>
                     <a href="#features">Features</a>
                     <a href="#how-it-works">How It Works</a>
                     <a href="#security">Security</a>
                     <a href="#security">Compliance</a>
-                    <a href="https://app.clearchain.space/login">Login</a>
                 </div>
             </div>
         </nav>
     </header>
 
     <section class="hero">
+        <div class="hero-deco" aria-hidden="true">
+            <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="fadeWhite" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#84cc16;stop-opacity:0.35" />
+                        <stop offset="50%" style="stop-color:#84cc16;stop-opacity:0.12" />
+                        <stop offset="100%" style="stop-color:#84cc16;stop-opacity:0" />
+                    </linearGradient>
+                    <linearGradient id="fadeWhite2" x1="0%" y1="20%" x2="100%" y2="80%">
+                        <stop offset="0%" style="stop-color:#a3e635;stop-opacity:0.2" />
+                        <stop offset="100%" style="stop-color:#a3e635;stop-opacity:0" />
+                    </linearGradient>
+                </defs>
+                <!-- C-shaped bands / graph-like curves fading into white -->
+                <path d="M 380 20 Q 200 80 50 200 Q 80 320 380 380" stroke="url(#fadeWhite)" stroke-width="24" fill="none" stroke-linecap="round"/>
+                <path d="M 360 40 Q 220 90 80 200 Q 120 310 360 360" stroke="url(#fadeWhite)" stroke-width="20" fill="none" stroke-linecap="round"/>
+                <path d="M 340 60 Q 240 100 110 200 Q 160 300 340 340" stroke="url(#fadeWhite2)" stroke-width="18" fill="none" stroke-linecap="round"/>
+                <path d="M 320 80 Q 260 110 140 200 Q 200 290 320 320" stroke="url(#fadeWhite2)" stroke-width="14" fill="none" stroke-linecap="round"/>
+            </svg>
+        </div>
         <div class="hero-grid">
             <div class="hero-content">
                 <h1>Clear Chain</h1>
