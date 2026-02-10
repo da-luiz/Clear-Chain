@@ -1,10 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" fill="none">
-  <!-- Triangle with 3 green lines, circles at each vertex -->
-  <!-- Equilateral triangle: vertices at (24,8), (8,40), (40,40); center ~24,29 -->
-  <path d="M 24 8 L 8 40 L 40 40 Z" stroke="#2e7d32" stroke-width="2" fill="none"/>
-  <circle cx="24" cy="8" r="4" stroke="#2e7d32" stroke-width="1.5" fill="none"/>
-  <circle cx="8" cy="40" r="4" stroke="#2e7d32" stroke-width="1.5" fill="none"/>
-  <circle cx="40" cy="40" r="4" stroke="#2e7d32" stroke-width="1.5" fill="none"/>
-  <!-- ClearChain text in dark grey -->
-  <text x="56" y="32" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="22" font-weight="700" fill="#4a4a4a" letter-spacing="-0.02em">ClearChain</text>
+<svg width="220" height="80" viewBox="0 0 220 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Triangle node icon -->
+  <g stroke="#2E7D32" stroke-width="4" fill="none" stroke-linecap="round">
+    <line x1="30" y1="50" x2="50" y2="20" />
+    <line x1="50" y1="20" x2="70" y2="50" />
+    <line x1="30" y1="50" x2="70" y2="50" />
+  </g>
+
+  <!-- Nodes -->
+  <circle cx="30" cy="50" r="6" fill="#2E7D32"/>
+  <circle cx="50" cy="20" r="6" fill="#2E7D32"/>
+  <circle cx="70" cy="50" r="6" fill="#2E7D32"/>
+
+  <!-- Text -->
+  <text x="90" y="48" font-family="Inter, Arial, sans-serif" font-size="24" fill="#333">
+    ClearChain
+  </text>
 </svg>
