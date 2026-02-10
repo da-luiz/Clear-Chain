@@ -157,34 +157,48 @@ function LoginPageContent() {
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-[55%_45%]">
-      {/* Left panel: branding - icon before Clear Chain like homepage */}
-      <div className="bg-[#f0fdf4] flex flex-col p-8 lg:p-12 order-2 lg:order-1">
-        <div className="flex-1 flex flex-col justify-center">
+      {/* Left panel: branding - black, white, lemon green; deco on light background */}
+      <div className="bg-[#f7fee7] flex flex-col p-8 lg:p-12 order-2 lg:order-1 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-[70%] max-w-[500px] h-full pointer-events-none opacity-60" aria-hidden>
+          <svg viewBox="0 0 400 400" fill="none" className="absolute -top-[10%] -right-[5%] w-[110%] h-[120%]">
+            <defs>
+              <linearGradient id="loginFade" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#84cc16" stopOpacity={0.4} />
+                <stop offset="60%" stopColor="#84cc16" stopOpacity={0.1} />
+                <stop offset="100%" stopColor="#84cc16" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <path d="M 380 20 Q 200 80 50 200 Q 80 320 380 380" stroke="url(#loginFade)" strokeWidth="28" fill="none" strokeLinecap="round" />
+            <path d="M 360 40 Q 220 90 80 200 Q 120 310 360 360" stroke="url(#loginFade)" strokeWidth="22" fill="none" strokeLinecap="round" />
+            <path d="M 340 60 Q 240 100 110 200 Q 160 300 340 340" stroke="url(#loginFade)" strokeWidth="18" fill="none" strokeLinecap="round" />
+          </svg>
+        </div>
+        <div className="flex-1 flex flex-col justify-center relative z-10">
           <div className="flex items-center gap-3 mb-4">
             <img src="/clearchain_icon.svg" alt="" className="h-12 w-12 flex-shrink-0" />
-            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight">
+            <h1 className="text-4xl lg:text-5xl font-bold text-[#0a0a0a] tracking-tight">
               Clear Chain
             </h1>
           </div>
-          <p className="text-gray-600 text-lg max-w-md">
+          <p className="text-[#525252] text-lg max-w-md">
             Streamline vendor management with workflow automation and compliance tracking.
           </p>
         </div>
-        <div className="text-sm text-gray-500 mt-8">
-          <a href="#" className="hover:text-green-700 text-gray-600">Privacy</a>
+        <div className="text-sm text-[#737373] mt-8 relative z-10">
+          <a href="#" className="hover:text-[#84cc16] text-[#525252]">Privacy</a>
           <span className="mx-2">·</span>
-          <a href="#" className="hover:text-green-700 text-gray-600">Legal</a>
+          <a href="#" className="hover:text-[#84cc16] text-[#525252]">Legal</a>
         </div>
       </div>
 
-      {/* Right panel: form - bright, attractive */}
-      <div className="bg-gradient-to-br from-[#14532d] via-[#166534] to-[#15803d] flex items-center justify-center p-8 lg:p-12 order-1 lg:order-2">
+      {/* Right panel: black, white, lemon green */}
+      <div className="bg-[#0a0a0a] flex items-center justify-center p-8 lg:p-12 order-1 lg:order-2">
         <div className="w-full max-w-md">
-          <div className="bg-white/95 backdrop-blur rounded-2xl shadow-2xl p-8 lg:p-10">
-          <h2 className="text-3xl font-extrabold text-gray-900">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 lg:p-10 border border-[#e5e5e5]">
+          <h2 className="text-3xl font-extrabold text-[#0a0a0a]">
             Welcome
           </h2>
-          <p className="mt-2 text-gray-600 text-sm">
+          <p className="mt-2 text-[#525252] text-sm">
             Sign in to continue to Clear Chain
           </p>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -203,7 +217,7 @@ function LoginPageContent() {
                   name="username"
                   type="text"
                   required
-                  className="block w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="block w-full px-4 py-3 bg-white border border-[#e5e5e5] rounded-lg text-[#0a0a0a] placeholder-[#737373] focus:outline-none focus:ring-2 focus:ring-[#84cc16] focus:border-transparent"
                   placeholder="Email"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -218,7 +232,7 @@ function LoginPageContent() {
                   name="password"
                   type="password"
                   required
-                  className="block w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="block w-full px-4 py-3 bg-white border border-[#e5e5e5] rounded-lg text-[#0a0a0a] placeholder-[#737373] focus:outline-none focus:ring-2 focus:ring-[#84cc16] focus:border-transparent"
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -227,11 +241,11 @@ function LoginPageContent() {
             </div>
 
             <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center text-gray-600">
-                <input type="checkbox" className="rounded border-gray-400 text-green-600 focus:ring-green-500" />
+              <label className="flex items-center text-[#525252]">
+                <input type="checkbox" className="rounded border-[#a3a3a3] text-[#84cc16] focus:ring-[#84cc16]" />
                 <span className="ml-2">Remember me</span>
               </label>
-              <a href="#" className="text-green-600 hover:text-green-700 font-medium">
+              <a href="#" className="text-[#84cc16] hover:text-[#65a30d] font-medium">
                 Forgot your password?
               </a>
             </div>
@@ -240,7 +254,7 @@ function LoginPageContent() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl text-sm font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-green-500 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-200"
+                className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl text-sm font-semibold text-[#0a0a0a] bg-[#84cc16] hover:bg-[#65a30d] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-[#84cc16] disabled:bg-[#a3a3a3] disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-200"
               >
                 {loading ? 'Signing in...' : 'Login'}
               </button>
@@ -300,13 +314,13 @@ function LoginPageContent() {
 
           {!checkingStatus && !isInitialized && !showRegister && (
             <div className="text-center">
-              <p className="text-sm text-gray-600 mb-2">
+              <p className="text-sm text-[#525252] mb-2">
                 No admin account exists yet.
               </p>
               <button
                 type="button"
                 onClick={() => setShowRegister(true)}
-                className="text-green-600 hover:text-green-700 text-sm font-medium"
+                className="text-[#84cc16] hover:text-[#65a30d] text-sm font-medium"
               >
                 Create the first admin account →
               </button>
@@ -314,7 +328,7 @@ function LoginPageContent() {
           )}
 
           {!checkingStatus && isInitialized && (
-            <div className="text-center text-sm text-gray-500">
+            <div className="text-center text-sm text-[#737373]">
               <p>Sign in with your credentials</p>
             </div>
           )}
@@ -322,8 +336,8 @@ function LoginPageContent() {
 
         {/* Registration Form (shown when system not initialized) */}
           {!checkingStatus && !isInitialized && showRegister && (
-            <div className="mt-8 border-t border-gray-200 pt-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
+            <div className="mt-8 border-t border-[#e5e5e5] pt-8">
+              <h3 className="text-xl font-bold text-[#0a0a0a] mb-4">
                 Create First Admin Account
               </h3>
               <form className="space-y-4" onSubmit={handleRegisterSubmit}>
@@ -427,14 +441,14 @@ function LoginPageContent() {
                       confirmPassword: '',
                     })
                   }}
-                  className="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-transparent hover:bg-gray-100"
+                  className="flex-1 py-2 px-4 border border-[#e5e5e5] rounded-lg text-sm font-medium text-[#525252] bg-transparent hover:bg-[#f7fee7]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 py-2 px-4 border border-transparent rounded-lg text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-500 disabled:cursor-not-allowed"
+                  className="flex-1 py-2 px-4 border border-transparent rounded-lg text-sm font-medium text-[#0a0a0a] bg-[#84cc16] hover:bg-[#65a30d] disabled:bg-[#a3a3a3] disabled:cursor-not-allowed"
                 >
                   {loading ? 'Creating...' : 'Create Admin'}
                 </button>
@@ -452,10 +466,10 @@ function LoginPageContent() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-[#f7fee7]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#84cc16] mx-auto"></div>
+          <p className="mt-4 text-[#525252]">Loading...</p>
         </div>
       </div>
     }>
