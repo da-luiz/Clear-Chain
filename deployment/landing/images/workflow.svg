@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 220" fill="none">
+  <defs>
+    <linearGradient id="stepGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#d4edda"/>
+      <stop offset="100%" style="stop-color:#c3e6cb"/>
+    </linearGradient>
+  </defs>
+  <!-- Step 1 -->
+  <g>
+    <circle cx="100" cy="50" r="32" fill="#2e7d32"/>
+    <text x="100" y="56" font-family="system-ui,sans-serif" font-size="20" font-weight="bold" fill="white" text-anchor="middle">1</text>
+    <rect x="40" y="95" width="120" height="100" rx="8" fill="url(#stepGrad)" stroke="#2e7d32" stroke-width="1"/>
+    <text x="100" y="120" font-family="system-ui,sans-serif" font-size="14" font-weight="bold" fill="#1b5e20" text-anchor="middle">Request Vendor</text>
+    <text x="100" y="142" font-family="system-ui,sans-serif" font-size="11" fill="#333" text-anchor="middle">Submit vendor details</text>
+    <text x="100" y="158" font-family="system-ui,sans-serif" font-size="11" fill="#333" text-anchor="middle">and documents.</text>
+  </g>
+  <path d="M 220 50 H 268" stroke="#2e7d32" stroke-width="2"/>
+  <!-- Step 2 -->
+  <g>
+    <circle cx="350" cy="50" r="32" fill="#2e7d32"/>
+    <text x="350" y="56" font-family="system-ui,sans-serif" font-size="20" font-weight="bold" fill="white" text-anchor="middle">2</text>
+    <rect x="290" y="95" width="120" height="100" rx="8" fill="url(#stepGrad)" stroke="#2e7d32" stroke-width="1"/>
+    <text x="350" y="120" font-family="system-ui,sans-serif" font-size="14" font-weight="bold" fill="#1b5e20" text-anchor="middle">Compliance Review</text>
+    <text x="350" y="142" font-family="system-ui,sans-serif" font-size="11" fill="#333" text-anchor="middle">Verify vendor and</text>
+    <text x="350" y="158" font-family="system-ui,sans-serif" font-size="11" fill="#333" text-anchor="middle">ensure compliance.</text>
+  </g>
+  <path d="M 470 50 H 518" stroke="#2e7d32" stroke-width="2"/>
+  <!-- Step 3 -->
+  <g>
+    <circle cx="600" cy="50" r="32" fill="#2e7d32"/>
+    <text x="600" y="56" font-family="system-ui,sans-serif" font-size="20" font-weight="bold" fill="white" text-anchor="middle">3</text>
+    <rect x="540" y="95" width="120" height="100" rx="8" fill="url(#stepGrad)" stroke="#2e7d32" stroke-width="1"/>
+    <text x="600" y="120" font-family="system-ui,sans-serif" font-size="14" font-weight="bold" fill="#1b5e20" text-anchor="middle">Contract Setup</text>
+    <text x="600" y="142" font-family="system-ui,sans-serif" font-size="11" fill="#333" text-anchor="middle">Create vendor agreement</text>
+    <text x="600" y="158" font-family="system-ui,sans-serif" font-size="11" fill="#333" text-anchor="middle">and pricing terms.</text>
+  </g>
+  <path d="M 720 50 H 768" stroke="#2e7d32" stroke-width="2"/>
+  <!-- Step 4 -->
+  <g>
+    <circle cx="850" cy="50" r="32" fill="#2e7d32"/>
+    <text x="850" y="56" font-family="system-ui,sans-serif" font-size="20" font-weight="bold" fill="white" text-anchor="middle">4</text>
+    <rect x="790" y="95" width="120" height="100" rx="8" fill="url(#stepGrad)" stroke="#2e7d32" stroke-width="1"/>
+    <text x="850" y="120" font-family="system-ui,sans-serif" font-size="14" font-weight="bold" fill="#1b5e20" text-anchor="middle">Start Procurement</text>
+    <text x="850" y="142" font-family="system-ui,sans-serif" font-size="11" fill="#333" text-anchor="middle">Manage purchase orders</text>
+    <text x="850" y="158" font-family="system-ui,sans-serif" font-size="11" fill="#333" text-anchor="middle">and track spending.</text>
+  </g>
+</svg>

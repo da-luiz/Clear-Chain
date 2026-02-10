@@ -160,7 +160,7 @@ function LoginPageContent() {
       {/* Left panel: branding */}
       <div className="bg-white flex flex-col p-8 lg:p-12 order-2 lg:order-1">
         <div className="flex-1 flex flex-col justify-center">
-          <img src="/logo.svg" alt="Clear Chain" className="h-10 w-auto mb-8 hidden lg:block" />
+          <img src="/logo.png" alt="ClearChain" className="h-10 w-auto mb-8 hidden lg:block" onError={(e) => { const t = e.target as HTMLImageElement; t.onerror = null; t.src = '/logo.svg'; t.alt = 'Clear Chain'; }} />
           <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-3">
             Clear Chain
           </h1>
