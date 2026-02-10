@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: 'Clear Chain',
   description: 'Manage vendors, contracts, and purchase orders',
   icons: {
-    icon: '/logo.svg',
+    icon: '/clearchain_icon.svg',
   },
 }
 
