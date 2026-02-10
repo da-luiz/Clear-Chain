@@ -157,32 +157,35 @@ function LoginPageContent() {
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-[55%_45%]">
-      {/* Left panel: branding */}
-      <div className="bg-white flex flex-col p-8 lg:p-12 order-2 lg:order-1">
+      {/* Left panel: branding - icon before Clear Chain like homepage */}
+      <div className="bg-[#f0fdf4] flex flex-col p-8 lg:p-12 order-2 lg:order-1">
         <div className="flex-1 flex flex-col justify-center">
-          <img src="/clearchain_icon.svg" alt="ClearChain" className="h-10 w-auto mb-8 hidden lg:block" />
-          <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-3">
-            Clear Chain
-          </h1>
-          <p className="text-gray-600 text-lg">
+          <div className="flex items-center gap-3 mb-4">
+            <img src="/clearchain_icon.svg" alt="" className="h-12 w-12 flex-shrink-0" />
+            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight">
+              Clear Chain
+            </h1>
+          </div>
+          <p className="text-gray-600 text-lg max-w-md">
             Streamline vendor management with workflow automation and compliance tracking.
           </p>
         </div>
         <div className="text-sm text-gray-500 mt-8">
-          <a href="#" className="hover:text-gray-700">Privacy</a>
+          <a href="#" className="hover:text-green-700 text-gray-600">Privacy</a>
           <span className="mx-2">·</span>
-          <a href="#" className="hover:text-gray-700">Legal</a>
+          <a href="#" className="hover:text-green-700 text-gray-600">Legal</a>
         </div>
       </div>
 
-      {/* Right panel: form */}
-      <div className="bg-[#1f2937] flex items-center justify-center p-8 lg:p-12 order-1 lg:order-2">
+      {/* Right panel: form - bright, attractive */}
+      <div className="bg-gradient-to-br from-[#14532d] via-[#166534] to-[#15803d] flex items-center justify-center p-8 lg:p-12 order-1 lg:order-2">
         <div className="w-full max-w-md">
-          <h2 className="text-3xl font-extrabold text-white">
+          <div className="bg-white/95 backdrop-blur rounded-2xl shadow-2xl p-8 lg:p-10">
+          <h2 className="text-3xl font-extrabold text-gray-900">
             Welcome
           </h2>
-          <p className="mt-2 text-gray-400 text-sm">
-            Please login using your ID to start
+          <p className="mt-2 text-gray-600 text-sm">
+            Sign in to continue to Clear Chain
           </p>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             {error && (
@@ -192,7 +195,7 @@ function LoginPageContent() {
             )}
             <div className="space-y-4">
               <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-1">
+                <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
                   Email
                 </label>
                 <input
@@ -207,7 +210,7 @@ function LoginPageContent() {
                 />
               </div>
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                   Password
                 </label>
                 <input
@@ -224,11 +227,11 @@ function LoginPageContent() {
             </div>
 
             <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center text-gray-400">
-                <input type="checkbox" className="rounded border-gray-500 text-green-600 focus:ring-green-500" />
+              <label className="flex items-center text-gray-600">
+                <input type="checkbox" className="rounded border-gray-400 text-green-600 focus:ring-green-500" />
                 <span className="ml-2">Remember me</span>
               </label>
-              <a href="#" className="text-teal-400 hover:text-teal-300">
+              <a href="#" className="text-green-600 hover:text-green-700 font-medium">
                 Forgot your password?
               </a>
             </div>
@@ -237,7 +240,7 @@ function LoginPageContent() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#1f2937] focus:ring-green-500 disabled:bg-gray-500 disabled:cursor-not-allowed"
+                className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl text-sm font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-green-500 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-200"
               >
                 {loading ? 'Signing in...' : 'Login'}
               </button>
@@ -297,13 +300,13 @@ function LoginPageContent() {
 
           {!checkingStatus && !isInitialized && !showRegister && (
             <div className="text-center">
-              <p className="text-sm text-gray-400 mb-2">
+              <p className="text-sm text-gray-600 mb-2">
                 No admin account exists yet.
               </p>
               <button
                 type="button"
                 onClick={() => setShowRegister(true)}
-                className="text-teal-400 hover:text-teal-300 text-sm font-medium"
+                className="text-green-600 hover:text-green-700 text-sm font-medium"
               >
                 Create the first admin account →
               </button>
@@ -311,7 +314,7 @@ function LoginPageContent() {
           )}
 
           {!checkingStatus && isInitialized && (
-            <div className="text-center text-sm text-gray-400">
+            <div className="text-center text-sm text-gray-500">
               <p>Sign in with your credentials</p>
             </div>
           )}
@@ -319,8 +322,8 @@ function LoginPageContent() {
 
         {/* Registration Form (shown when system not initialized) */}
           {!checkingStatus && !isInitialized && showRegister && (
-            <div className="mt-8 border-t border-gray-600 pt-8">
-              <h3 className="text-xl font-bold text-white mb-4">
+            <div className="mt-8 border-t border-gray-200 pt-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
                 Create First Admin Account
               </h3>
               <form className="space-y-4" onSubmit={handleRegisterSubmit}>
@@ -330,7 +333,7 @@ function LoginPageContent() {
                   </div>
                 )}
               <div>
-                <label htmlFor="reg-username" className="block text-sm font-medium text-gray-300">
+                <label htmlFor="reg-username" className="block text-sm font-medium text-gray-700">
                   Username
                 </label>
                 <input
@@ -344,7 +347,7 @@ function LoginPageContent() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-<label htmlFor="reg-firstName" className="block text-sm font-medium text-gray-300">
+<label htmlFor="reg-firstName" className="block text-sm font-medium text-gray-700">
                   First Name
                   </label>
                   <input
@@ -357,21 +360,21 @@ function LoginPageContent() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="reg-lastName" className="block text-sm font-medium text-gray-700">
-                    Last Name
+<label htmlFor="reg-lastName" className="block text-sm font-medium text-gray-700">
+                  Last Name
                   </label>
                   <input
                     id="reg-lastName"
                     type="text"
                     required
-                    className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    className="mt-1 block w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 sm:text-sm"
                     value={registerData.lastName}
                     onChange={(e) => setRegisterData({ ...registerData, lastName: e.target.value })}
                   />
                 </div>
               </div>
               <div>
-                <label htmlFor="reg-email" className="block text-sm font-medium text-gray-300">
+                <label htmlFor="reg-email" className="block text-sm font-medium text-gray-700">
                   Email
                 </label>
                 <input
@@ -391,13 +394,13 @@ function LoginPageContent() {
                   id="reg-password"
                   type="password"
                   required
-                  className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="mt-1 block w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 sm:text-sm"
                   value={registerData.password}
                   onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
                 />
               </div>
               <div>
-                <label htmlFor="reg-confirmPassword" className="block text-sm font-medium text-gray-300">
+                <label htmlFor="reg-confirmPassword" className="block text-sm font-medium text-gray-700">
                   Confirm Password
                 </label>
                 <input
@@ -424,7 +427,7 @@ function LoginPageContent() {
                       confirmPassword: '',
                     })
                   }}
-                  className="flex-1 py-2 px-4 border border-gray-500 rounded-lg text-sm font-medium text-gray-300 bg-transparent hover:bg-gray-700"
+                  className="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-transparent hover:bg-gray-100"
                 >
                   Cancel
                 </button>
@@ -439,6 +442,7 @@ function LoginPageContent() {
             </form>
           </div>
         )}
+          </div>
         </div>
       </div>
     </div>
