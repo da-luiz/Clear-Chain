@@ -1,0 +1,18 @@
+# Local OAuth2 Configuration (Optional)
+# Copy this file to application-local.properties and fill in your OAuth2 credentials
+# This file is gitignored and won't be committed to the repository
+#
+# To use: Copy this file to application-local.properties and uncomment/fill in your credentials:
+#   cp application-local.properties.example application-local.properties
+#   # Then edit application-local.properties with your actual credentials
+
+# Google OAuth2 (optional - uncomment and fill in if you want Google login)
+#spring.security.oauth2.client.registration.google.client-id=your_google_client_id_here
+#spring.security.oauth2.client.registration.google.client-secret=your_google_client_secret_here
+
+# GitHub OAuth2 (optional - uncomment and fill in if you want GitHub login)
+#spring.security.oauth2.client.registration.github.client-id=your_github_client_id_here
+#spring.security.oauth2.client.registration.github.client-secret=your_github_client_secret_here
+
+
+
