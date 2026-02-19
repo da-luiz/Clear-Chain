@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+**/node_modules/
+
+# Build outputs
+build/
+out/
+target/
+dist/
+.next/
+frontend/.next/
+*.class
+*.jar
+*.war
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# Env and secrets
+.env
+.env.local
+.env.*.local
+*.pem
+
+# Logs and cache
+*.log
+npm-debug.log*
+.cache/
+.gradle/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large binary / native
+*.node
