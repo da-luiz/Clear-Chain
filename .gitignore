@@ -26,6 +26,8 @@ frontend/.next/
 .env.local
 .env.*.local
 *.pem
+# Local config with secrets (use application-local.properties.example as template)
+**/application-local.properties
 
 # Logs and cache
 *.log
