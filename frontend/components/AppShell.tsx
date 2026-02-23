@@ -71,6 +71,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [headerDate, setHeaderDate] = useState(() => new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }))
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     const currentUser = getCurrentUser()
@@ -79,6 +80,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       router.push('/login')
     }
   }, [pathname, router])
+
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [pathname])
 
   const handleRefresh = () => {
     setHeaderDate(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }))
@@ -93,8 +98,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Left sidebar */}
-      <aside className="w-56 bg-white border-r border-gray-200 flex flex-col shrink-0">
+      {/* Desktop sidebar */}
+      <aside className="hidden lg:flex w-56 bg-white border-r border-gray-200 flex-col shrink-0">
         <div className="p-4 border-b border-gray-100">
           <Link href="/" className="flex items-center gap-2 text-gray-800 font-semibold">
             <ChainIcon className="w-8 h-8 text-emerald-600" />
@@ -145,21 +150,99 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         )}
       </aside>
 
+      {/* Mobile sidebar overlay */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-40 flex">
+          <div
+            className="absolute inset-0 bg-black/30"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <aside className="relative z-50 w-72 max-w-[85vw] bg-white border-r border-gray-200 flex flex-col">
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+              <Link href="/" className="flex items-center gap-2 text-gray-800 font-semibold">
+                <ChainIcon className="w-8 h-8 text-emerald-600" />
+                <span>ClearChain</span>
+              </Link>
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-2 text-gray-500 hover:text-gray-800"
+                aria-label="Close menu"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <nav className="flex-1 p-3 space-y-0.5 overflow-auto">
+              {visibleNavItems.map((item) => {
+                const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-emerald-50 text-emerald-700'
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    }`}
+                  >
+                    <Icon name={item.icon} />
+                    {item.label}
+                  </Link>
+                )
+              })}
+            </nav>
+            {user && (
+              <div className="p-3 border-t border-gray-100">
+                <div className="px-3 py-2 text-xs text-gray-500">
+                  <div className="font-medium text-gray-700">{user.firstName} {user.lastName}</div>
+                  <div>{getRoleDisplayName(user.role)}</div>
+                </div>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem('token')
+                    localStorage.removeItem('user')
+                    router.push('/login')
+                  }}
+                  className="mt-2 w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </aside>
+        </div>
+      )}
+
       {/* Main area: header + content */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-14 bg-white border-b border-gray-200 flex items-center justify-end gap-4 px-6 shrink-0">
-          <span className="text-sm text-gray-600">{headerDate}</span>
-          <button
-            onClick={handleRefresh}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            Refresh
-          </button>
+        <header className="h-14 bg-white border-b border-gray-200 flex items-center justify-between gap-3 px-4 sm:px-6 shrink-0">
+          <div className="flex items-center gap-3 min-w-0">
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="lg:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+              aria-label="Open menu"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <span className="lg:hidden text-sm font-semibold text-gray-800 truncate">ClearChain</span>
+          </div>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <span className="hidden sm:inline text-sm text-gray-600">{headerDate}</span>
+            <button
+              onClick={handleRefresh}
+              className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span className="hidden sm:inline">Refresh</span>
+            </button>
+          </div>
         </header>
-        <main className="flex-1 p-6 overflow-auto">
+        <main className="flex-1 p-4 sm:p-6 overflow-auto">
           {children}
         </main>
       </div>

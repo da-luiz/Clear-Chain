@@ -87,24 +87,24 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <Link
             href="/vendor-requests/create"
-            className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 hover:bg-emerald-100 transition-colors"
+            className="rounded-lg border border-gray-200 bg-white px-4 py-3 hover:bg-gray-50 transition-colors"
           >
-            <p className="text-sm font-semibold text-emerald-800">Create Vendor</p>
-            <p className="text-xs text-emerald-700 mt-1">Start vendor onboarding request</p>
+            <p className="text-sm font-semibold text-gray-900">Create Vendor</p>
+            <p className="text-xs text-gray-600 mt-1">Start vendor onboarding request</p>
           </Link>
           <Link
             href="/contracts/create"
-            className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 hover:bg-blue-100 transition-colors"
+            className="rounded-lg border border-gray-200 bg-white px-4 py-3 hover:bg-gray-50 transition-colors"
           >
-            <p className="text-sm font-semibold text-blue-800">Create Contract</p>
-            <p className="text-xs text-blue-700 mt-1">Add a new vendor contract</p>
+            <p className="text-sm font-semibold text-gray-900">Create Contract</p>
+            <p className="text-xs text-gray-600 mt-1">Add a new vendor contract</p>
           </Link>
           <Link
             href="/purchase-orders/create"
-            className="rounded-lg border border-purple-200 bg-purple-50 px-4 py-3 hover:bg-purple-100 transition-colors"
+            className="rounded-lg border border-gray-200 bg-white px-4 py-3 hover:bg-gray-50 transition-colors"
           >
-            <p className="text-sm font-semibold text-purple-800">Create Purchase Order</p>
-            <p className="text-xs text-purple-700 mt-1">Issue a new purchase order</p>
+            <p className="text-sm font-semibold text-gray-900">Create Purchase Order</p>
+            <p className="text-xs text-gray-600 mt-1">Issue a new purchase order</p>
           </Link>
         </div>
       </div>

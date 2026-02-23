@@ -19,8 +19,6 @@ export default function CreateVendorRequestPage() {
     legalName: '',
     serviceDescription: '',
     reasonForAdding: '',
-    expectedContractValue: '',
-    currency: '',
     requestingDepartmentId: '',
     // Contact details
     primaryContactName: '',
@@ -39,31 +37,6 @@ export default function CreateVendorRequestPage() {
     addressPostalCode: '',
     addressCountry: '',
   })
-  
-  // Currency options - comprehensive list
-  const currencies = [
-    { code: 'NGN', name: 'Nigerian Naira' },
-    { code: 'USD', name: 'US Dollar' },
-    { code: 'EUR', name: 'Euro' },
-    { code: 'GBP', name: 'British Pound' },
-    { code: 'JPY', name: 'Japanese Yen' },
-    { code: 'AUD', name: 'Australian Dollar' },
-    { code: 'CAD', name: 'Canadian Dollar' },
-    { code: 'CHF', name: 'Swiss Franc' },
-    { code: 'CNY', name: 'Chinese Yuan' },
-    { code: 'INR', name: 'Indian Rupee' },
-    { code: 'SGD', name: 'Singapore Dollar' },
-    { code: 'HKD', name: 'Hong Kong Dollar' },
-    { code: 'ZAR', name: 'South African Rand' },
-    { code: 'BRL', name: 'Brazilian Real' },
-    { code: 'MXN', name: 'Mexican Peso' },
-    { code: 'KRW', name: 'South Korean Won' },
-    { code: 'TRY', name: 'Turkish Lira' },
-    { code: 'RUB', name: 'Russian Ruble' },
-    { code: 'AED', name: 'UAE Dirham' },
-    { code: 'SAR', name: 'Saudi Riyal' },
-  ]
-  
   // Supporting documents state
   const [supportingDocs, setSupportingDocs] = useState<Array<{type: string, value: string, name: string, fileName?: string}>>([])
   const [newDocType, setNewDocType] = useState<'file' | 'link' | 'github' | 'linkedin'>('link')
@@ -187,8 +160,6 @@ export default function CreateVendorRequestPage() {
         companyName: formData.companyName,
         legalName: formData.legalName || undefined,
         businessJustification,
-        expectedContractValue: formData.expectedContractValue ? parseFloat(formData.expectedContractValue) : undefined,
-        currency: formData.currency || undefined,
         requestingDepartmentId: parseInt(formData.requestingDepartmentId),
         requestedByUserId: user.userId,
         // Contact details
@@ -341,42 +312,6 @@ export default function CreateVendorRequestPage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Expected Contract Value
-              </label>
-              <input
-                type="number"
-                name="expectedContractValue"
-                value={formData.expectedContractValue}
-                onChange={handleChange}
-                step="0.01"
-                min="0"
-                placeholder="0.00"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            {formData.expectedContractValue && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Currency *
-                </label>
-                <select
-                  name="currency"
-                  value={formData.currency}
-                  onChange={handleChange}
-                  required={!!formData.expectedContractValue}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select currency</option>
-                  {currencies.map(curr => (
-                    <option key={curr.code} value={curr.code}>
-                      {curr.code} - {curr.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
           </div>
         </div>
 
