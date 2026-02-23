@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { createVendorRequest, getDepartments, getVendorCategories, uploadFile, Department, VendorCategory } from '@/lib/api'
+import { createVendorRequest, submitVendorRequest, getDepartments, getVendorCategories, uploadFile, Department, VendorCategory } from '@/lib/api'
 import { getCurrentUser, canCreateVendorRequest, User } from '@/lib/permissions'
 import { getErrorMessage } from '@/lib/errorHandler'
 import Link from 'next/link'
@@ -17,6 +17,8 @@ export default function CreateVendorRequestPage() {
   const [formData, setFormData] = useState({
     companyName: '',
     legalName: '',
+    serviceDescription: '',
+    reasonForAdding: '',
     expectedContractValue: '',
     currency: '',
     requestingDepartmentId: '',
@@ -167,9 +169,24 @@ export default function CreateVendorRequestPage() {
     }
 
     try {
+      if (!formData.companyName.trim()) throw new Error('Vendor name is required')
+      if (!formData.primaryContactEmail.trim()) throw new Error('Vendor email is required')
+      if (!formData.primaryContactPhone.trim()) throw new Error('Vendor phone is required')
+      if (!formData.addressStreet.trim()) throw new Error('Vendor address is required')
+      if (!formData.categoryId) throw new Error('Service category is required')
+      if (!formData.serviceDescription.trim()) throw new Error('Service description is required')
+      if (!formData.reasonForAdding.trim()) throw new Error('Reason for adding this vendor is required')
+      if (!formData.requestingDepartmentId) throw new Error('Requesting department is required')
+
+      const businessJustification = [
+        `Service Description: ${formData.serviceDescription.trim()}`,
+        `Reason for adding this vendor: ${formData.reasonForAdding.trim()}`
+      ].join('\n')
+
       const requestData = {
         companyName: formData.companyName,
         legalName: formData.legalName || undefined,
+        businessJustification,
         expectedContractValue: formData.expectedContractValue ? parseFloat(formData.expectedContractValue) : undefined,
         currency: formData.currency || undefined,
         requestingDepartmentId: parseInt(formData.requestingDepartmentId),
@@ -195,6 +212,7 @@ export default function CreateVendorRequestPage() {
       }
 
       const created = await createVendorRequest(requestData)
+      await submitVendorRequest(created.id)
       router.push(`/vendor-requests/${created.id}`)
     } catch (err: any) {
       console.error('Error creating vendor request:', err)
@@ -208,10 +226,10 @@ export default function CreateVendorRequestPage() {
     <div className="max-w-4xl mx-auto p-6">
       <div className="mb-6">
         <Link href="/vendor-requests" className="text-blue-600 hover:text-blue-800 mb-4 inline-block">
-          ← Back to Vendor Requests
+          ← Back to Vendors
         </Link>
-        <h1 className="text-3xl font-bold">Create Vendor Request</h1>
-        <p className="text-gray-600 mt-2">Fill in the company and contact information below</p>
+        <h1 className="text-3xl font-bold">Create Vendor</h1>
+        <p className="text-gray-600 mt-2">Complete the form and submit for compliance review.</p>
       </div>
 
       {error && (
@@ -221,13 +239,13 @@ export default function CreateVendorRequestPage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Basic Company Info */}
+        {/* Section A — Basic Information */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Basic Company Information</h2>
+          <h2 className="text-xl font-semibold mb-4">Section A — Basic Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Company Name *
+                Vendor Name *
               </label>
               <input
                 type="text"
@@ -293,12 +311,13 @@ export default function CreateVendorRequestPage() {
             {categories.length > 0 && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category
+                Service Category *
                 </label>
                 <select
                   name="categoryId"
                   value={formData.categoryId}
                   onChange={handleChange}
+                required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Select a category</option>
@@ -308,6 +327,20 @@ export default function CreateVendorRequestPage() {
                 </select>
               </div>
             )}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Service Description *
+              </label>
+              <textarea
+                name="serviceDescription"
+                value={formData.serviceDescription}
+                onChange={handleChange}
+                required
+                rows={3}
+                placeholder="Describe the services this vendor will provide"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Expected Contract Value
@@ -379,26 +412,28 @@ export default function CreateVendorRequestPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email
+                Vendor Email *
               </label>
               <input
                 type="email"
                 name="primaryContactEmail"
                 value={formData.primaryContactEmail}
                 onChange={handleChange}
+                required
                 placeholder="contact@example.com"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Phone Number
+                Vendor Phone *
               </label>
               <input
                 type="tel"
                 name="primaryContactPhone"
                 value={formData.primaryContactPhone}
                 onChange={handleChange}
+                required
                 placeholder="+1 234 567 8900"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -412,13 +447,14 @@ export default function CreateVendorRequestPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Street Address
+                Vendor Address *
               </label>
               <input
                 type="text"
                 name="addressStreet"
                 value={formData.addressStreet}
                 onChange={handleChange}
+                required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -473,11 +509,29 @@ export default function CreateVendorRequestPage() {
           </div>
         </div>
 
-        {/* Supporting Documents */}
+        {/* Section B — Business Justification */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Supporting Documents</h2>
+          <h2 className="text-xl font-semibold mb-4">Section B — Business Justification</h2>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Reason for adding this vendor *
+          </label>
+          <textarea
+            name="reasonForAdding"
+            value={formData.reasonForAdding}
+            onChange={handleChange}
+            required
+            rows={4}
+            placeholder="Explain why this vendor should be added."
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {/* Section C — Document Upload */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold mb-4">Section C — Document Upload</h2>
           <p className="text-sm text-gray-600 mb-4">
-            Upload documents (banking details, certificates, etc.) or add links (website, GitHub, LinkedIn) for Compliance and Finance approvers to review
+            Upload supporting documents like company profile, proposal, portfolio, or certifications.
+            Financial documents are not required at requester stage.
           </p>
           
           {/* List existing documents */}
@@ -656,7 +710,7 @@ export default function CreateVendorRequestPage() {
             disabled={loading}
             className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
           >
-            {loading ? 'Creating...' : 'Create Request'}
+            {loading ? 'Submitting...' : 'Submit Vendor Request'}
           </button>
         </div>
       </form>

@@ -31,7 +31,7 @@ export default function VendorRequestsPage() {
     switch (status) {
       case 'DRAFT': return 'bg-gray-100 text-gray-800'
       case 'PENDING_COMPLIANCE_REVIEW': return 'bg-yellow-100 text-yellow-800'
-      case 'PENDING_FINANCE_REVIEW': return 'bg-blue-100 text-blue-800'
+      case 'PENDING_FINANCE_REVIEW': return 'bg-purple-100 text-purple-800'
       case 'PENDING_ADMIN_REVIEW': return 'bg-purple-100 text-purple-800'
       case 'ACTIVE': return 'bg-green-100 text-green-800'
       case 'REJECTED_BY_COMPLIANCE': return 'bg-red-100 text-red-800'
@@ -43,7 +43,25 @@ export default function VendorRequestsPage() {
   }
 
   const formatStatus = (status: string) => {
-    return status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+    switch (status) {
+      case 'PENDING_COMPLIANCE_REVIEW':
+        return 'Pending Compliance Review'
+      case 'PENDING_FINANCE_REVIEW':
+      case 'PENDING_ADMIN_REVIEW':
+        return 'Pending Admin Approval'
+      case 'ACTIVE':
+        return 'Approved'
+      case 'REJECTED_BY_COMPLIANCE':
+      case 'REJECTED_BY_FINANCE':
+      case 'REJECTED_BY_ADMIN':
+        return 'Rejected'
+      case 'DRAFT':
+        return 'Draft'
+      case 'CANCELLED':
+        return 'Cancelled'
+      default:
+        return status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+    }
   }
 
   if (loading) {
@@ -66,7 +84,7 @@ export default function VendorRequestsPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Vendor Requests</h1>
+        <h1 className="text-3xl font-bold">Vendors</h1>
         <div className="flex space-x-3">
           <button
             onClick={loadRequests}
@@ -78,7 +96,7 @@ export default function VendorRequestsPage() {
             href="/vendor-requests/create"
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
           >
-            + Create Request
+            + Create Vendor
           </Link>
         </div>
       </div>
@@ -89,19 +107,19 @@ export default function VendorRequestsPage() {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Request Number
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Company Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Department
+                  Vendor Name
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Created
+                  Created By
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Action
                 </th>
               </tr>
             </thead>
@@ -109,15 +127,7 @@ export default function VendorRequestsPage() {
               {requests.map((request) => (
                 <tr key={request.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    <Link href={`/vendor-requests/${request.id}`} className="text-blue-600 hover:text-blue-800">
-                      {request.requestNumber}
-                    </Link>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {request.companyName}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {request.requestingDepartmentName || '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(request.status)}`}>
@@ -125,7 +135,18 @@ export default function VendorRequestsPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {request.requestedByUsername || '-'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {request.createdAt ? new Date(request.createdAt).toLocaleDateString() : '-'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <Link
+                      href={`/vendor-requests/${request.id}`}
+                      className="text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      View
+                    </Link>
                   </td>
                 </tr>
               ))}
@@ -139,7 +160,7 @@ export default function VendorRequestsPage() {
             href="/vendor-requests/create"
             className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
           >
-            + Create Your First Request
+            + Create Your First Vendor
           </Link>
         </div>
       )}

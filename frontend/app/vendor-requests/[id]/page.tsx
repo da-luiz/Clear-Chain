@@ -192,6 +192,33 @@ export default function VendorRequestDetailPage() {
     }
   })() : []
 
+  const statusLabel = (() => {
+    switch (request.status) {
+      case 'PENDING_COMPLIANCE_REVIEW':
+        return 'Pending Compliance Review'
+      case 'PENDING_FINANCE_REVIEW':
+      case 'PENDING_ADMIN_REVIEW':
+        return 'Pending Admin Approval'
+      case 'ACTIVE':
+        return 'Approved'
+      case 'REJECTED_BY_COMPLIANCE':
+      case 'REJECTED_BY_FINANCE':
+      case 'REJECTED_BY_ADMIN':
+        return 'Rejected'
+      default:
+        return request.status.replace(/_/g, ' ')
+    }
+  })()
+
+  const statusColor = (() => {
+    if (request.status === 'ACTIVE') return 'bg-green-100 text-green-800'
+    if (request.status.startsWith('REJECTED')) return 'bg-red-100 text-red-800'
+    if (request.status === 'PENDING_COMPLIANCE_REVIEW') return 'bg-yellow-100 text-yellow-800'
+    if (request.status === 'PENDING_FINANCE_REVIEW' || request.status === 'PENDING_ADMIN_REVIEW') return 'bg-purple-100 text-purple-800'
+    if (request.status === 'DRAFT') return 'bg-gray-100 text-gray-800'
+    return 'bg-gray-100 text-gray-800'
+  })()
+
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="mb-6">
@@ -203,16 +230,8 @@ export default function VendorRequestDetailPage() {
             <h1 className="text-3xl font-bold">{request.companyName}</h1>
             <p className="text-gray-600 mt-1">Request #{request.requestNumber}</p>
           </div>
-          <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
-            request.status === 'ACTIVE' ? 'bg-green-100 text-green-800' :
-            request.status === 'REJECTED_BY_FINANCE' || request.status === 'REJECTED_BY_COMPLIANCE' || request.status === 'REJECTED_BY_ADMIN' ? 'bg-red-100 text-red-800' :
-            request.status === 'PENDING_ADMIN_REVIEW' ? 'bg-purple-100 text-purple-800' :
-            request.status === 'PENDING_FINANCE_REVIEW' ? 'bg-blue-100 text-blue-800' :
-            request.status === 'PENDING_COMPLIANCE_REVIEW' ? 'bg-yellow-100 text-yellow-800' :
-            request.status === 'DRAFT' ? 'bg-gray-100 text-gray-800' :
-            'bg-gray-100 text-gray-800'
-          }`}>
-            {request.status.replace(/_/g, ' ')}
+          <span className={`px-4 py-2 rounded-full text-sm font-semibold ${statusColor}`}>
+            {statusLabel}
           </span>
         </div>
       </div>
@@ -402,7 +421,22 @@ export default function VendorRequestDetailPage() {
 
       {/* Workflow Visualization */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Approval Workflow</h2>
+        <h2 className="text-xl font-semibold mb-4">Status Timeline</h2>
+        <div className="mb-4 text-sm text-gray-600">
+          Track the vendor onboarding journey from submission to final decision.
+        </div>
+        {request.rejectionReason && (
+          <div className="mb-4 bg-red-50 border border-red-200 rounded p-3">
+            <p className="text-sm font-semibold text-red-700">Rejection Reason</p>
+            <p className="text-sm text-red-700 mt-1">{request.rejectionReason}</p>
+          </div>
+        )}
+        {request.additionalInfoRequired && (
+          <div className="mb-4 bg-amber-50 border border-amber-200 rounded p-3">
+            <p className="text-sm font-semibold text-amber-700">Reviewer Comment</p>
+            <p className="text-sm text-amber-700 mt-1">{request.additionalInfoRequired}</p>
+          </div>
+        )}
         <div className="flex items-center justify-between">
           <div className={`flex-1 text-center p-4 rounded ${request.status === 'PENDING_COMPLIANCE_REVIEW' || request.status === 'REJECTED_BY_COMPLIANCE' ? 'bg-yellow-100 border-2 border-yellow-400' : request.status === 'ACTIVE' || request.status === 'PENDING_FINANCE_REVIEW' || request.status === 'PENDING_ADMIN_REVIEW' ? 'bg-green-100' : 'bg-gray-100'}`}>
             <div className="font-semibold">1. Compliance Review</div>
@@ -415,7 +449,7 @@ export default function VendorRequestDetailPage() {
           </div>
           <div className="mx-4 text-gray-400">→</div>
           <div className={`flex-1 text-center p-4 rounded ${request.status === 'PENDING_FINANCE_REVIEW' || request.status === 'REJECTED_BY_FINANCE' ? 'bg-blue-100 border-2 border-blue-400' : request.status === 'ACTIVE' || request.status === 'PENDING_ADMIN_REVIEW' ? 'bg-green-100' : 'bg-gray-100'}`}>
-            <div className="font-semibold">2. Finance Review</div>
+            <div className="font-semibold">2. Internal Approval</div>
             <div className="text-sm text-gray-600 mt-1">
               {request.status === 'PENDING_FINANCE_REVIEW' ? '⏳ In Progress' :
                request.status === 'REJECTED_BY_FINANCE' ? '❌ Rejected' :
@@ -430,7 +464,7 @@ export default function VendorRequestDetailPage() {
           </div>
           <div className="mx-4 text-gray-400">→</div>
           <div className={`flex-1 text-center p-4 rounded ${request.status === 'PENDING_ADMIN_REVIEW' || request.status === 'REJECTED_BY_ADMIN' ? 'bg-purple-100 border-2 border-purple-400' : request.status === 'ACTIVE' ? 'bg-green-100' : 'bg-gray-100'}`}>
-            <div className="font-semibold">3. Admin Review</div>
+            <div className="font-semibold">3. Admin Decision</div>
             <div className="text-sm text-gray-600 mt-1">
               {request.status === 'PENDING_ADMIN_REVIEW' ? '⏳ In Progress' :
                request.status === 'REJECTED_BY_ADMIN' ? '❌ Rejected' :
