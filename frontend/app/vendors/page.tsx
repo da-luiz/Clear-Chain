@@ -49,13 +49,18 @@ export default function VendorsPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Vendors</h1>
         <div className="flex space-x-3">
+          <Link
+            href="/vendor-requests/create"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded"
+          >
+            + Create Vendor
+          </Link>
           <button
             onClick={loadVendors}
             className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
           >
             Refresh
           </button>
-          {/* Direct vendor creation removed - use Vendor Creation Request workflow instead */}
         </div>
       </div>
 

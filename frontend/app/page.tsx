@@ -81,6 +81,34 @@ export default function Dashboard() {
         />
       </div>
 
+      {/* Quick actions */}
+      <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <Link
+            href="/vendor-requests/create"
+            className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 hover:bg-emerald-100 transition-colors"
+          >
+            <p className="text-sm font-semibold text-emerald-800">Create Vendor</p>
+            <p className="text-xs text-emerald-700 mt-1">Start vendor onboarding request</p>
+          </Link>
+          <Link
+            href="/contracts/create"
+            className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 hover:bg-blue-100 transition-colors"
+          >
+            <p className="text-sm font-semibold text-blue-800">Create Contract</p>
+            <p className="text-xs text-blue-700 mt-1">Add a new vendor contract</p>
+          </Link>
+          <Link
+            href="/purchase-orders/create"
+            className="rounded-lg border border-purple-200 bg-purple-50 px-4 py-3 hover:bg-purple-100 transition-colors"
+          >
+            <p className="text-sm font-semibold text-purple-800">Create Purchase Order</p>
+            <p className="text-xs text-purple-700 mt-1">Issue a new purchase order</p>
+          </Link>
+        </div>
+      </div>
+
       {/* Middle row: Procurement Activity + Contracts expiring in 30 days */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ProcurementActivityCard
