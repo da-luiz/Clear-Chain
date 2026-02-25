@@ -70,11 +70,10 @@ export default function VendorRequestDetailPage() {
     setActionLoading(true)
     setError(null)
     try {
-      // Workflow: Compliance -> Admin
-      // No comments needed for approval - just approve
+      // Workflow: Compliance -> Admin (PENDING_FINANCE_REVIEW is legacy; Admin can still act)
       if (request.status === 'PENDING_COMPLIANCE_REVIEW') {
         await approveVendorRequestByCompliance(id, user.userId, '')
-      } else if (request.status === 'PENDING_ADMIN_REVIEW') {
+      } else if (request.status === 'PENDING_ADMIN_REVIEW' || request.status === 'PENDING_FINANCE_REVIEW') {
         await approveVendorRequestByAdmin(id, user.userId, '')
       } else {
         throw new Error('Request is not in a state that can be approved')
@@ -104,10 +103,10 @@ export default function VendorRequestDetailPage() {
     setActionLoading(true)
     setError(null)
     try {
-      // Workflow: Compliance -> Admin
+      // Workflow: Compliance -> Admin (PENDING_FINANCE_REVIEW is legacy; Admin can still act)
       if (request.status === 'PENDING_COMPLIANCE_REVIEW') {
         await rejectVendorRequestByCompliance(id, user.userId, actionData.comment)
-      } else if (request.status === 'PENDING_ADMIN_REVIEW') {
+      } else if (request.status === 'PENDING_ADMIN_REVIEW' || request.status === 'PENDING_FINANCE_REVIEW') {
         await rejectVendorRequestByAdmin(id, user.userId, actionData.comment)
       } else {
         throw new Error('Request is not in a state that can be rejected')
@@ -130,11 +129,13 @@ export default function VendorRequestDetailPage() {
   }
 
   // Permission-based access control for workflow: Compliance -> Admin
+  // Treat PENDING_FINANCE_REVIEW as Admin-actionable (legacy state after workflow change)
   const canSubmit = request.status === 'DRAFT' && canSubmitVendorRequest(user)
   const canApproveCompliance = request.status === 'PENDING_COMPLIANCE_REVIEW' && canApproveVendorRequestByCompliance(user)
   const canRejectCompliance = request.status === 'PENDING_COMPLIANCE_REVIEW' && canApproveVendorRequestByCompliance(user)
-  const canApproveAdmin = request.status === 'PENDING_ADMIN_REVIEW' && canApproveVendorRequestByAdmin(user)
-  const canRejectAdmin = request.status === 'PENDING_ADMIN_REVIEW' && canApproveVendorRequestByAdmin(user)
+  const isPendingAdminOrLegacyFinance = request.status === 'PENDING_ADMIN_REVIEW' || request.status === 'PENDING_FINANCE_REVIEW'
+  const canApproveAdmin = isPendingAdminOrLegacyFinance && canApproveVendorRequestByAdmin(user)
+  const canRejectAdmin = isPendingAdminOrLegacyFinance && canApproveVendorRequestByAdmin(user)
   
   // Parse supporting documents
   const supportingDocs = request.supportingDocuments ? (() => {
@@ -150,6 +151,7 @@ export default function VendorRequestDetailPage() {
       case 'PENDING_COMPLIANCE_REVIEW':
         return 'Pending Compliance Review'
       case 'PENDING_ADMIN_REVIEW':
+      case 'PENDING_FINANCE_REVIEW': // legacy: show as Pending Admin Approval so Admin can act
         return 'Pending Admin Approval'
       case 'ACTIVE':
         return 'Approved'
@@ -166,7 +168,7 @@ export default function VendorRequestDetailPage() {
     if (request.status === 'ACTIVE') return 'bg-green-100 text-green-800'
     if (request.status.startsWith('REJECTED')) return 'bg-red-100 text-red-800'
     if (request.status === 'PENDING_COMPLIANCE_REVIEW') return 'bg-yellow-100 text-yellow-800'
-    if (request.status === 'PENDING_ADMIN_REVIEW') return 'bg-purple-100 text-purple-800'
+    if (request.status === 'PENDING_ADMIN_REVIEW' || request.status === 'PENDING_FINANCE_REVIEW') return 'bg-purple-100 text-purple-800'
     if (request.status === 'DRAFT') return 'bg-gray-100 text-gray-800'
     return 'bg-gray-100 text-gray-800'
   })()
@@ -259,20 +261,20 @@ export default function VendorRequestDetailPage() {
           </div>
         )}
         <div className="flex items-center justify-between">
-          <div className={`flex-1 text-center p-4 rounded ${request.status === 'PENDING_COMPLIANCE_REVIEW' || request.status === 'REJECTED_BY_COMPLIANCE' ? 'bg-yellow-100 border-2 border-yellow-400' : request.status === 'ACTIVE' || request.status === 'PENDING_ADMIN_REVIEW' ? 'bg-green-100' : 'bg-gray-100'}`}>
+          <div className={`flex-1 text-center p-4 rounded ${request.status === 'PENDING_COMPLIANCE_REVIEW' || request.status === 'REJECTED_BY_COMPLIANCE' ? 'bg-yellow-100 border-2 border-yellow-400' : request.status === 'ACTIVE' || request.status === 'PENDING_ADMIN_REVIEW' || request.status === 'PENDING_FINANCE_REVIEW' ? 'bg-green-100' : 'bg-gray-100'}`}>
             <div className="font-semibold">1. Compliance Review</div>
             <div className="text-sm text-gray-600 mt-1">
               {request.status === 'PENDING_COMPLIANCE_REVIEW' ? '⏳ In Progress' :
                request.status === 'REJECTED_BY_COMPLIANCE' ? '❌ Rejected' :
-               request.status === 'ACTIVE' || request.status === 'PENDING_ADMIN_REVIEW' ? '✅ Approved' :
+               request.status === 'ACTIVE' || request.status === 'PENDING_ADMIN_REVIEW' || request.status === 'PENDING_FINANCE_REVIEW' ? '✅ Approved' :
                '⏸️ Pending'}
             </div>
           </div>
           <div className="mx-4 text-gray-400">→</div>
-          <div className={`flex-1 text-center p-4 rounded ${request.status === 'PENDING_ADMIN_REVIEW' || request.status === 'REJECTED_BY_ADMIN' ? 'bg-purple-100 border-2 border-purple-400' : request.status === 'ACTIVE' ? 'bg-green-100' : 'bg-gray-100'}`}>
+          <div className={`flex-1 text-center p-4 rounded ${request.status === 'PENDING_ADMIN_REVIEW' || request.status === 'PENDING_FINANCE_REVIEW' || request.status === 'REJECTED_BY_ADMIN' ? 'bg-purple-100 border-2 border-purple-400' : request.status === 'ACTIVE' ? 'bg-green-100' : 'bg-gray-100'}`}>
             <div className="font-semibold">2. Admin Decision</div>
             <div className="text-sm text-gray-600 mt-1">
-              {request.status === 'PENDING_ADMIN_REVIEW' ? '⏳ In Progress' :
+              {request.status === 'PENDING_ADMIN_REVIEW' || request.status === 'PENDING_FINANCE_REVIEW' ? '⏳ In Progress' :
                request.status === 'REJECTED_BY_ADMIN' ? '❌ Rejected' :
                request.status === 'ACTIVE' ? '✅ Approved - Vendor Created' :
                '⏸️ Pending'}

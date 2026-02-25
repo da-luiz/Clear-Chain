@@ -233,11 +233,12 @@ public class VendorCreationRequest {
     }
 
     /**
-     * Admin approves the request - creates active vendor (final approval)
+     * Admin approves the request - creates active vendor (final approval).
+     * Also accepts PENDING_FINANCE_REVIEW (legacy) so Admin can complete requests stuck after workflow change.
      */
     public void approveByAdmin(User adminReviewer) {
-        if (this.status != RequestStatus.PENDING_ADMIN_REVIEW) {
-            throw new IllegalStateException("Only requests pending admin review can be approved by Admin");
+        if (this.status != RequestStatus.PENDING_ADMIN_REVIEW && this.status != RequestStatus.PENDING_FINANCE_REVIEW) {
+            throw new IllegalStateException("Only requests pending admin review (or legacy finance review) can be approved by Admin");
         }
         this.status = RequestStatus.ACTIVE;
         this.reviewedBy = adminReviewer;
@@ -245,11 +246,12 @@ public class VendorCreationRequest {
     }
 
     /**
-     * Admin rejects the request
+     * Admin rejects the request.
+     * Also accepts PENDING_FINANCE_REVIEW (legacy) so Admin can reject requests stuck after workflow change.
      */
     public void rejectByAdmin(User adminReviewer, String rejectionReason) {
-        if (this.status != RequestStatus.PENDING_ADMIN_REVIEW) {
-            throw new IllegalStateException("Only requests pending admin review can be rejected by Admin");
+        if (this.status != RequestStatus.PENDING_ADMIN_REVIEW && this.status != RequestStatus.PENDING_FINANCE_REVIEW) {
+            throw new IllegalStateException("Only requests pending admin review (or legacy finance review) can be rejected by Admin");
         }
         this.status = RequestStatus.REJECTED_BY_ADMIN;
         this.reviewedBy = adminReviewer;
@@ -314,11 +316,11 @@ public class VendorCreationRequest {
     }
 
     public boolean canBeApprovedByAdmin() {
-        return this.status == RequestStatus.PENDING_ADMIN_REVIEW;
+        return this.status == RequestStatus.PENDING_ADMIN_REVIEW || this.status == RequestStatus.PENDING_FINANCE_REVIEW;
     }
 
     public boolean canBeRejectedByAdmin() {
-        return this.status == RequestStatus.PENDING_ADMIN_REVIEW;
+        return this.status == RequestStatus.PENDING_ADMIN_REVIEW || this.status == RequestStatus.PENDING_FINANCE_REVIEW;
     }
 
     public boolean hasBankingDetails() {
