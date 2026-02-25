@@ -16,7 +16,6 @@ import com.vms.vendor_management_system.application.mapper.VendorMapper;
 import com.vms.vendor_management_system.domain.entity.Contract;
 import com.vms.vendor_management_system.domain.entity.PurchaseOrder;
 import com.vms.vendor_management_system.domain.entity.Vendor;
-import com.vms.vendor_management_system.domain.entity.VendorCreationRequest;
 import com.vms.vendor_management_system.domain.enums.RequestStatus;
 import com.vms.vendor_management_system.domain.enums.VendorStatus;
 import com.vms.vendor_management_system.domain.repository.ContractRepository;
@@ -77,10 +76,9 @@ public class DashboardApplicationService {
         long suspendedVendors = vendorRepository.countByStatus(VendorStatus.SUSPENDED);
 
         // Pending vendor requests (Compliance + Admin review per ClearChain workflow)
-        long pendingFinanceRequests = vendorCreationRequestRepository.countByStatus(RequestStatus.PENDING_FINANCE_REVIEW);
         long pendingComplianceRequests = vendorCreationRequestRepository.countByStatus(RequestStatus.PENDING_COMPLIANCE_REVIEW);
         long pendingAdminRequests = vendorCreationRequestRepository.countByStatus(RequestStatus.PENDING_ADMIN_REVIEW);
-        long pendingRequests = pendingComplianceRequests + pendingAdminRequests + pendingFinanceRequests;
+        long pendingRequests = pendingComplianceRequests + pendingAdminRequests;
 
         long totalVendors = actualVendors + pendingRequests;
         long totalPurchaseOrders = purchaseOrderRepository.count();
@@ -93,7 +91,7 @@ public class DashboardApplicationService {
                 .toList();
 
         List<VendorCreationRequestResponse> latestRequests = vendorCreationRequestRepository.findByStatusIn(
-                        List.of(RequestStatus.PENDING_FINANCE_REVIEW, RequestStatus.PENDING_COMPLIANCE_REVIEW, RequestStatus.PENDING_ADMIN_REVIEW))
+                        List.of(RequestStatus.PENDING_COMPLIANCE_REVIEW, RequestStatus.PENDING_ADMIN_REVIEW))
                 .stream()
                 .limit(DEFAULT_LIMIT)
                 .map(VendorCreationRequestMapper::toResponse)
@@ -163,8 +161,8 @@ public class DashboardApplicationService {
                 .inactiveVendors(inactiveVendors)
                 .suspendedVendors(suspendedVendors)
                 .pendingVendorRequests(pendingRequests)
-                .submittedRequests(pendingFinanceRequests)
-                .underReviewRequests(pendingComplianceRequests)
+                .submittedRequests(pendingComplianceRequests)
+                .underReviewRequests(pendingAdminRequests)
                 .totalPurchaseOrders(totalPurchaseOrders)
                 .totalContracts(totalContracts)
                 .activeContractsCount(activeContractsCount)

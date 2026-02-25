@@ -176,13 +176,13 @@ public class VendorCreationRequest {
     }
 
     /**
-     * Compliance approves the request - moves to Finance review
+     * Compliance approves the request - moves directly to Admin review.
      */
     public void approveByCompliance(User complianceReviewer) {
         if (this.status != RequestStatus.PENDING_COMPLIANCE_REVIEW) {
             throw new IllegalStateException("Only requests pending compliance review can be approved by Compliance");
         }
-        this.status = RequestStatus.PENDING_FINANCE_REVIEW;
+        this.status = RequestStatus.PENDING_ADMIN_REVIEW;
         this.reviewedBy = complianceReviewer;
         this.reviewedAt = LocalDateTime.now();
     }

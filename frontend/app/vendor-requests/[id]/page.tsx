@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { getVendorRequest, submitVendorRequest, approveVendorRequestByFinance, rejectVendorRequestByFinance, approveVendorRequestByCompliance, rejectVendorRequestByCompliance, approveVendorRequestByAdmin, rejectVendorRequestByAdmin, addBankingDetails, VendorCreationRequest } from '@/lib/api'
-import { getCurrentUser, canSubmitVendorRequest, canAddBankingDetails, canApproveVendorRequestByFinance, canApproveVendorRequestByCompliance, canApproveVendorRequestByAdmin, User } from '@/lib/permissions'
+import { getVendorRequest, submitVendorRequest, approveVendorRequestByCompliance, rejectVendorRequestByCompliance, approveVendorRequestByAdmin, rejectVendorRequestByAdmin, VendorCreationRequest } from '@/lib/api'
+import { getCurrentUser, canSubmitVendorRequest, canApproveVendorRequestByCompliance, canApproveVendorRequestByAdmin, User } from '@/lib/permissions'
 import { getErrorMessage } from '@/lib/errorHandler'
 import Link from 'next/link'
 
@@ -17,19 +17,8 @@ export default function VendorRequestDetailPage() {
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [showBankingForm, setShowBankingForm] = useState(false)
   const [showApproveForm, setShowApproveForm] = useState(false)
   const [showRejectForm, setShowRejectForm] = useState(false)
-  
-  const [bankingData, setBankingData] = useState({
-    bankName: '',
-    accountHolderName: '',
-    accountNumber: '',
-    swiftBicCode: '',
-    currency: '',
-    paymentTerms: '',
-    preferredPaymentMethod: '',
-  })
   
   const [actionData, setActionData] = useState({
     comment: '',
@@ -50,18 +39,6 @@ export default function VendorRequestDetailPage() {
       const requestData = await getVendorRequest(id)
       setRequest(requestData)
       
-      // Pre-fill banking data if exists
-      if (requestData.bankName) {
-        setBankingData({
-          bankName: requestData.bankName || '',
-          accountHolderName: requestData.accountHolderName || '',
-          accountNumber: requestData.accountNumber || '',
-          swiftBicCode: requestData.swiftBicCode || '',
-          currency: requestData.currency || '',
-          paymentTerms: requestData.paymentTerms || '',
-          preferredPaymentMethod: requestData.preferredPaymentMethod || '',
-        })
-      }
     } catch (err: any) {
       setError(getErrorMessage(err) || 'Failed to load vendor request')
       console.error('Error loading vendor request:', err)
@@ -83,21 +60,6 @@ export default function VendorRequestDetailPage() {
     }
   }
 
-  const handleAddBankingDetails = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setActionLoading(true)
-    setError(null)
-    try {
-      await addBankingDetails(id, bankingData)
-      setShowBankingForm(false)
-      loadData()
-    } catch (err: any) {
-      setError(getErrorMessage(err) || 'Failed to add banking details')
-    } finally {
-      setActionLoading(false)
-    }
-  }
-
   const handleApprove = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user || !request) {
@@ -108,12 +70,10 @@ export default function VendorRequestDetailPage() {
     setActionLoading(true)
     setError(null)
     try {
-      // Determine which approval method based on current status (new workflow: Compliance → Finance → Admin)
+      // Workflow: Compliance -> Admin
       // No comments needed for approval - just approve
       if (request.status === 'PENDING_COMPLIANCE_REVIEW') {
         await approveVendorRequestByCompliance(id, user.userId, '')
-      } else if (request.status === 'PENDING_FINANCE_REVIEW') {
-        await approveVendorRequestByFinance(id, user.userId, '')
       } else if (request.status === 'PENDING_ADMIN_REVIEW') {
         await approveVendorRequestByAdmin(id, user.userId, '')
       } else {
@@ -144,11 +104,9 @@ export default function VendorRequestDetailPage() {
     setActionLoading(true)
     setError(null)
     try {
-      // Determine which rejection method based on current status (new workflow: Compliance → Finance → Admin)
+      // Workflow: Compliance -> Admin
       if (request.status === 'PENDING_COMPLIANCE_REVIEW') {
         await rejectVendorRequestByCompliance(id, user.userId, actionData.comment)
-      } else if (request.status === 'PENDING_FINANCE_REVIEW') {
-        await rejectVendorRequestByFinance(id, user.userId, actionData.comment)
       } else if (request.status === 'PENDING_ADMIN_REVIEW') {
         await rejectVendorRequestByAdmin(id, user.userId, actionData.comment)
       } else {
@@ -171,15 +129,10 @@ export default function VendorRequestDetailPage() {
     return <div className="text-red-600">Vendor request not found</div>
   }
 
-  // Permission-based access control for new workflow: Compliance → Finance → Admin
+  // Permission-based access control for workflow: Compliance -> Admin
   const canSubmit = request.status === 'DRAFT' && canSubmitVendorRequest(user)
-  const canAddBanking = request.status === 'PENDING_FINANCE_REVIEW' && canAddBankingDetails(user)
   const canApproveCompliance = request.status === 'PENDING_COMPLIANCE_REVIEW' && canApproveVendorRequestByCompliance(user)
   const canRejectCompliance = request.status === 'PENDING_COMPLIANCE_REVIEW' && canApproveVendorRequestByCompliance(user)
-  // Finance can only approve if banking details are present
-  const hasBankingDetails = request.bankName && request.accountNumber && request.accountHolderName
-  const canApproveFinance = request.status === 'PENDING_FINANCE_REVIEW' && canApproveVendorRequestByFinance(user) && hasBankingDetails
-  const canRejectFinance = request.status === 'PENDING_FINANCE_REVIEW' && canApproveVendorRequestByFinance(user)
   const canApproveAdmin = request.status === 'PENDING_ADMIN_REVIEW' && canApproveVendorRequestByAdmin(user)
   const canRejectAdmin = request.status === 'PENDING_ADMIN_REVIEW' && canApproveVendorRequestByAdmin(user)
   
@@ -196,7 +149,6 @@ export default function VendorRequestDetailPage() {
     switch (request.status) {
       case 'PENDING_COMPLIANCE_REVIEW':
         return 'Pending Compliance Review'
-      case 'PENDING_FINANCE_REVIEW':
       case 'PENDING_ADMIN_REVIEW':
         return 'Pending Admin Approval'
       case 'ACTIVE':
@@ -214,7 +166,7 @@ export default function VendorRequestDetailPage() {
     if (request.status === 'ACTIVE') return 'bg-green-100 text-green-800'
     if (request.status.startsWith('REJECTED')) return 'bg-red-100 text-red-800'
     if (request.status === 'PENDING_COMPLIANCE_REVIEW') return 'bg-yellow-100 text-yellow-800'
-    if (request.status === 'PENDING_FINANCE_REVIEW' || request.status === 'PENDING_ADMIN_REVIEW') return 'bg-purple-100 text-purple-800'
+    if (request.status === 'PENDING_ADMIN_REVIEW') return 'bg-purple-100 text-purple-800'
     if (request.status === 'DRAFT') return 'bg-gray-100 text-gray-800'
     return 'bg-gray-100 text-gray-800'
   })()
@@ -255,15 +207,7 @@ export default function VendorRequestDetailPage() {
               Submit Request
             </button>
           )}
-          {canAddBanking && (
-            <button
-              onClick={() => setShowBankingForm(!showBankingForm)}
-              className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
-            >
-              {request.bankName ? 'Update Banking Details' : 'Add Banking Details'}
-            </button>
-          )}
-          {(canApproveCompliance || canApproveFinance || canApproveAdmin) && (
+          {(canApproveCompliance || canApproveAdmin) && (
             <button
               onClick={() => {
                 setShowApproveForm(!showApproveForm)
@@ -273,14 +217,12 @@ export default function VendorRequestDetailPage() {
                   }, 100)
                 }
               }}
-              disabled={request.status === 'PENDING_FINANCE_REVIEW' && !hasBankingDetails}
               className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-              title={request.status === 'PENDING_FINANCE_REVIEW' && !hasBankingDetails ? 'Banking details required before approval' : ''}
             >
               Approve
             </button>
           )}
-          {(canRejectCompliance || canRejectFinance || canRejectAdmin) && (
+          {(canRejectCompliance || canRejectAdmin) && (
             <button
               onClick={() => {
                 setShowRejectForm(!showRejectForm)
@@ -295,129 +237,8 @@ export default function VendorRequestDetailPage() {
               Reject
             </button>
           )}
-          {request.status === 'PENDING_FINANCE_REVIEW' && !hasBankingDetails && canApproveVendorRequestByFinance(user) && (
-            <span className="text-sm text-red-600 font-medium">
-              ⚠️ Banking details required before approval
-            </span>
-          )}
         </div>
       </div>
-
-      {/* Banking Details Form */}
-      {showBankingForm && (
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Banking & Payment Details</h2>
-          <form onSubmit={handleAddBankingDetails} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Bank Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={bankingData.bankName}
-                  onChange={(e) => setBankingData({...bankingData, bankName: e.target.value})}
-                  className="w-full px-3 py-2 border rounded-md"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Account Holder Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={bankingData.accountHolderName}
-                  onChange={(e) => setBankingData({...bankingData, accountHolderName: e.target.value})}
-                  className="w-full px-3 py-2 border rounded-md"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Account Number / IBAN *</label>
-                <input
-                  type="text"
-                  required
-                  value={bankingData.accountNumber}
-                  onChange={(e) => setBankingData({...bankingData, accountNumber: e.target.value})}
-                  className="w-full px-3 py-2 border rounded-md"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">SWIFT / BIC Code</label>
-                <input
-                  type="text"
-                  value={bankingData.swiftBicCode}
-                  onChange={(e) => setBankingData({...bankingData, swiftBicCode: e.target.value})}
-                  className="w-full px-3 py-2 border rounded-md"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Currency *</label>
-                <select
-                  required
-                  value={bankingData.currency}
-                  onChange={(e) => setBankingData({...bankingData, currency: e.target.value})}
-                  className="w-full px-3 py-2 border rounded-md"
-                >
-                  <option value="">Select currency</option>
-                  <option value="NGN">NGN - Nigerian Naira</option>
-                  <option value="USD">USD - US Dollar</option>
-                  <option value="EUR">EUR - Euro</option>
-                  <option value="GBP">GBP - British Pound</option>
-                  <option value="JPY">JPY - Japanese Yen</option>
-                  <option value="AUD">AUD - Australian Dollar</option>
-                  <option value="CAD">CAD - Canadian Dollar</option>
-                  <option value="CHF">CHF - Swiss Franc</option>
-                  <option value="CNY">CNY - Chinese Yuan</option>
-                  <option value="INR">INR - Indian Rupee</option>
-                  <option value="SGD">SGD - Singapore Dollar</option>
-                  <option value="HKD">HKD - Hong Kong Dollar</option>
-                  <option value="ZAR">ZAR - South African Rand</option>
-                  <option value="BRL">BRL - Brazilian Real</option>
-                  <option value="MXN">MXN - Mexican Peso</option>
-                  <option value="KRW">KRW - South Korean Won</option>
-                  <option value="TRY">TRY - Turkish Lira</option>
-                  <option value="RUB">RUB - Russian Ruble</option>
-                  <option value="AED">AED - UAE Dirham</option>
-                  <option value="SAR">SAR - Saudi Riyal</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Terms</label>
-                <input
-                  type="text"
-                  value={bankingData.paymentTerms}
-                  onChange={(e) => setBankingData({...bankingData, paymentTerms: e.target.value})}
-                  placeholder="Net 30, Net 60, Upon Delivery"
-                  className="w-full px-3 py-2 border rounded-md"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Payment Method</label>
-                <input
-                  type="text"
-                  value={bankingData.preferredPaymentMethod}
-                  onChange={(e) => setBankingData({...bankingData, preferredPaymentMethod: e.target.value})}
-                  className="w-full px-3 py-2 border rounded-md"
-                />
-              </div>
-            </div>
-            <div className="flex justify-end space-x-3">
-              <button
-                type="button"
-                onClick={() => setShowBankingForm(false)}
-                className="px-4 py-2 border rounded-md"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={actionLoading}
-                className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:bg-gray-400"
-              >
-                Save Banking Details
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
 
       {/* Workflow Visualization */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
@@ -438,33 +259,18 @@ export default function VendorRequestDetailPage() {
           </div>
         )}
         <div className="flex items-center justify-between">
-          <div className={`flex-1 text-center p-4 rounded ${request.status === 'PENDING_COMPLIANCE_REVIEW' || request.status === 'REJECTED_BY_COMPLIANCE' ? 'bg-yellow-100 border-2 border-yellow-400' : request.status === 'ACTIVE' || request.status === 'PENDING_FINANCE_REVIEW' || request.status === 'PENDING_ADMIN_REVIEW' ? 'bg-green-100' : 'bg-gray-100'}`}>
+          <div className={`flex-1 text-center p-4 rounded ${request.status === 'PENDING_COMPLIANCE_REVIEW' || request.status === 'REJECTED_BY_COMPLIANCE' ? 'bg-yellow-100 border-2 border-yellow-400' : request.status === 'ACTIVE' || request.status === 'PENDING_ADMIN_REVIEW' ? 'bg-green-100' : 'bg-gray-100'}`}>
             <div className="font-semibold">1. Compliance Review</div>
             <div className="text-sm text-gray-600 mt-1">
               {request.status === 'PENDING_COMPLIANCE_REVIEW' ? '⏳ In Progress' :
                request.status === 'REJECTED_BY_COMPLIANCE' ? '❌ Rejected' :
-               request.status === 'ACTIVE' || request.status === 'PENDING_FINANCE_REVIEW' || request.status === 'PENDING_ADMIN_REVIEW' ? '✅ Approved' :
-               '⏸️ Pending'}
-            </div>
-          </div>
-          <div className="mx-4 text-gray-400">→</div>
-          <div className={`flex-1 text-center p-4 rounded ${request.status === 'PENDING_FINANCE_REVIEW' || request.status === 'REJECTED_BY_FINANCE' ? 'bg-blue-100 border-2 border-blue-400' : request.status === 'ACTIVE' || request.status === 'PENDING_ADMIN_REVIEW' ? 'bg-green-100' : 'bg-gray-100'}`}>
-            <div className="font-semibold">2. Internal Approval</div>
-            <div className="text-sm text-gray-600 mt-1">
-              {request.status === 'PENDING_FINANCE_REVIEW' ? '⏳ In Progress' :
-               request.status === 'REJECTED_BY_FINANCE' ? '❌ Rejected' :
                request.status === 'ACTIVE' || request.status === 'PENDING_ADMIN_REVIEW' ? '✅ Approved' :
                '⏸️ Pending'}
             </div>
-            {request.status === 'PENDING_FINANCE_REVIEW' && request.currency && (
-              <div className="text-xs text-blue-700 mt-2 font-medium">
-                Currency: {request.currency}
-              </div>
-            )}
           </div>
           <div className="mx-4 text-gray-400">→</div>
           <div className={`flex-1 text-center p-4 rounded ${request.status === 'PENDING_ADMIN_REVIEW' || request.status === 'REJECTED_BY_ADMIN' ? 'bg-purple-100 border-2 border-purple-400' : request.status === 'ACTIVE' ? 'bg-green-100' : 'bg-gray-100'}`}>
-            <div className="font-semibold">3. Admin Decision</div>
+            <div className="font-semibold">2. Admin Decision</div>
             <div className="text-sm text-gray-600 mt-1">
               {request.status === 'PENDING_ADMIN_REVIEW' ? '⏳ In Progress' :
                request.status === 'REJECTED_BY_ADMIN' ? '❌ Rejected' :
@@ -480,7 +286,7 @@ export default function VendorRequestDetailPage() {
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Supporting Documents</h2>
           <p className="text-sm text-gray-600 mb-4">
-            Documents and links provided by requester for Compliance and Finance review
+            Documents and links provided by requester for Compliance and Admin review
           </p>
           <div className="space-y-3">
             {supportingDocs.map((doc: any, index: number) => {
@@ -710,56 +516,6 @@ export default function VendorRequestDetailPage() {
           </div>
         )}
 
-        {/* Banking Details */}
-        {request.bankName && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4">Banking & Payment Details</h2>
-            <dl className="space-y-3">
-              {request.currency && (
-                <div className="bg-blue-50 p-3 rounded border-l-4 border-blue-400">
-                  <dt className="text-sm font-medium text-blue-700">Currency (Selected by Requester)</dt>
-                  <dd className="mt-1 text-lg font-semibold text-blue-900">{request.currency}</dd>
-                </div>
-              )}
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Bank Name</dt>
-                <dd className="mt-1 text-sm text-gray-900">{request.bankName}</dd>
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Account Holder</dt>
-                <dd className="mt-1 text-sm text-gray-900">{request.accountHolderName}</dd>
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Account Number</dt>
-                <dd className="mt-1 text-sm text-gray-900">{request.accountNumber}</dd>
-              </div>
-              {request.swiftBicCode && (
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">SWIFT/BIC</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{request.swiftBicCode}</dd>
-                </div>
-              )}
-              {request.currency && (
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Currency</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{request.currency}</dd>
-                </div>
-              )}
-              {request.paymentTerms && (
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Payment Terms</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{request.paymentTerms}</dd>
-                </div>
-              )}
-              {request.preferredPaymentMethod && (
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Payment Method</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{request.preferredPaymentMethod}</dd>
-                </div>
-              )}
-            </dl>
-          </div>
-        )}
       </div>
     </div>
   )

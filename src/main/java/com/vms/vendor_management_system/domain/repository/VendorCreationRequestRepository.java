@@ -36,7 +36,7 @@ public interface VendorCreationRequestRepository extends JpaRepository<VendorCre
     @Query("SELECT COUNT(vcr) FROM VendorCreationRequest vcr WHERE vcr.requestingDepartment.id = :departmentId AND vcr.status = :status")
     long countByDepartmentAndStatus(@Param("departmentId") Long departmentId, @Param("status") RequestStatus status);
     
-    @Query("SELECT vcr FROM VendorCreationRequest vcr WHERE vcr.status = 'PENDING_COMPLIANCE_REVIEW' OR vcr.status = 'PENDING_FINANCE_REVIEW' OR vcr.status = 'PENDING_ADMIN_REVIEW' ORDER BY vcr.createdAt ASC")
+    @Query("SELECT vcr FROM VendorCreationRequest vcr WHERE vcr.status = 'PENDING_COMPLIANCE_REVIEW' OR vcr.status = 'PENDING_ADMIN_REVIEW' ORDER BY vcr.createdAt ASC")
     List<VendorCreationRequest> findPendingRequests();
     
     @Query("SELECT vcr FROM VendorCreationRequest vcr WHERE vcr.reviewedBy.id = :reviewerId AND vcr.status IN :statuses")
