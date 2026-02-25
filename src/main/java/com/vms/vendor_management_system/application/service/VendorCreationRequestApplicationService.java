@@ -267,11 +267,10 @@ public class VendorCreationRequestApplicationService {
         VendorCreationRequest request = vendorCreationRequestRepository.findById(requestId)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Vendor request not found"));
         // Determine which approval method to use based on current status
+        // PENDING_FINANCE_REVIEW is treated as Admin (workflow is now Compliance -> Admin only)
         if (request.getStatus() == RequestStatus.PENDING_COMPLIANCE_REVIEW) {
             return approveByCompliance(requestId, action);
-        } else if (request.getStatus() == RequestStatus.PENDING_FINANCE_REVIEW) {
-            return approveByFinance(requestId, action);
-        } else if (request.getStatus() == RequestStatus.PENDING_ADMIN_REVIEW) {
+        } else if (request.getStatus() == RequestStatus.PENDING_FINANCE_REVIEW || request.getStatus() == RequestStatus.PENDING_ADMIN_REVIEW) {
             return approveByAdmin(requestId, action);
         } else {
             throw new ResponseStatusException(BAD_REQUEST, "Request is not in a state that can be approved");
@@ -282,12 +281,10 @@ public class VendorCreationRequestApplicationService {
     public VendorCreationRequestResponse reject(Long requestId, VendorRequestAction action) {
         VendorCreationRequest request = vendorCreationRequestRepository.findById(requestId)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Vendor request not found"));
-        // Determine which rejection method to use based on current status
+        // PENDING_FINANCE_REVIEW is treated as Admin (workflow is now Compliance -> Admin only)
         if (request.getStatus() == RequestStatus.PENDING_COMPLIANCE_REVIEW) {
             return rejectByCompliance(requestId, action);
-        } else if (request.getStatus() == RequestStatus.PENDING_FINANCE_REVIEW) {
-            return rejectByFinance(requestId, action);
-        } else if (request.getStatus() == RequestStatus.PENDING_ADMIN_REVIEW) {
+        } else if (request.getStatus() == RequestStatus.PENDING_FINANCE_REVIEW || request.getStatus() == RequestStatus.PENDING_ADMIN_REVIEW) {
             return rejectByAdmin(requestId, action);
         } else {
             throw new ResponseStatusException(BAD_REQUEST, "Request is not in a state that can be rejected");
