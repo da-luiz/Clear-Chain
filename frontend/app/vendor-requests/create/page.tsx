@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { createVendorRequest, submitVendorRequest, getDepartments, getVendorCategories, uploadFile, Department, VendorCategory } from '@/lib/api'
-import { getCurrentUser, canCreateVendorRequest, User } from '@/lib/permissions'
+import { createVendorRequest, submitVendorRequest, getDepartments, getVendorCategories, uploadFile, createDepartment, Department, VendorCategory } from '@/lib/api'
+import { getCurrentUser, canCreateVendorRequest, canManageUsers, User } from '@/lib/permissions'
 import { getErrorMessage } from '@/lib/errorHandler'
 import Link from 'next/link'
 
@@ -43,6 +43,12 @@ export default function CreateVendorRequestPage() {
   const [newDocValue, setNewDocValue] = useState<string>('')
   const [newDocName, setNewDocName] = useState<string>('')
   const [uploadingFile, setUploadingFile] = useState(false)
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+
+  // Department creation (admin-only)
+  const [showCreateDepartment, setShowCreateDepartment] = useState(false)
+  const [departmentForm, setDepartmentForm] = useState({ name: '', code: '', description: '' })
+  const [creatingDepartment, setCreatingDepartment] = useState(false)
 
   useEffect(() => {
     const currentUser = getCurrentUser()
@@ -81,18 +87,28 @@ export default function CreateVendorRequestPage() {
     }))
   }
   
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files ? Array.from(e.target.files) : []
-    if (files.length === 0) return
-    
+    setSelectedFiles(files)
+    // Allow re-selecting the same file(s) again
+    e.target.value = ''
+    setError(null)
+  }
+
+  const handleUploadSelectedFiles = async () => {
+    if (selectedFiles.length === 0) {
+      setError('Please select at least one file to upload')
+      return
+    }
+
     setUploadingFile(true)
     setError(null)
-    
+
     try {
       const createdDocs: Array<{type: string, value: string, name: string, fileName?: string}> = []
       const displayName = newDocName.trim()
 
-      for (const file of files) {
+      for (const file of selectedFiles) {
         const uploadResult = await uploadFile(file)
         createdDocs.push({
           type: 'file',
@@ -104,7 +120,7 @@ export default function CreateVendorRequestPage() {
 
       setSupportingDocs(prev => [...prev, ...createdDocs])
       setNewDocName('')
-      e.target.value = '' // Reset file input (so selecting the same file again works)
+      setSelectedFiles([])
     } catch (err: any) {
       console.error('Error uploading file:', err)
       setError(getErrorMessage(err) || 'Failed to upload file')
@@ -144,6 +160,38 @@ export default function CreateVendorRequestPage() {
   
   const handleRemoveSupportingDoc = (index: number) => {
     setSupportingDocs(supportingDocs.filter((_, i) => i !== index))
+  }
+
+  const handleCreateDepartment = async () => {
+    if (!user || !canManageUsers(user)) return
+
+    const name = (departmentForm.name || '').trim()
+    const code = (departmentForm.code || '').trim()
+    const description = (departmentForm.description || '').trim()
+
+    if (!name) {
+      setError('Department name is required')
+      return
+    }
+    if (!code) {
+      setError('Department code is required')
+      return
+    }
+
+    setCreatingDepartment(true)
+    setError(null)
+
+    try {
+      await createDepartment({ name, code, description: description || undefined })
+      setShowCreateDepartment(false)
+      setDepartmentForm({ name: '', code: '', description: '' })
+      await loadData()
+    } catch (err: any) {
+      console.error('Error creating department:', err)
+      setError(getErrorMessage(err) || 'Failed to create department')
+    } finally {
+      setCreatingDepartment(false)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -559,7 +607,23 @@ export default function CreateVendorRequestPage() {
                       disabled={uploadingFile}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
                     />
+                    {selectedFiles.length > 0 && (
+                      <p className="text-xs text-gray-600 mt-1">
+                        Selected {selectedFiles.length} file{selectedFiles.length === 1 ? '' : 's'}
+                      </p>
+                    )}
                     {uploadingFile && <p className="text-xs text-gray-500 mt-1">Uploading...</p>}
+
+                    <div className="mt-3">
+                      <button
+                        type="button"
+                        onClick={handleUploadSelectedFiles}
+                        disabled={uploadingFile || selectedFiles.length === 0}
+                        className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 disabled:bg-gray-300"
+                      >
+                        Upload Files
+                      </button>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -650,9 +714,89 @@ export default function CreateVendorRequestPage() {
                   No departments found. Ask your Admin to create at least one department, then refresh this page.
                 </div>
               )}
+
+              {user && canManageUsers(user) && (
+                <div className="mt-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCreateDepartment(true)
+                      setDepartmentForm({ name: '', code: '', description: '' })
+                      setError(null)
+                    }}
+                    className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700"
+                  >
+                    Add Department
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
+
+        {showCreateDepartment && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+            <div className="w-full max-w-lg bg-white rounded-lg shadow-lg p-6">
+              <h3 className="text-xl font-semibold mb-2">Create Department</h3>
+              <p className="text-sm text-gray-600 mb-4">This will populate the Requesting Department dropdown.</p>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Department Name *</label>
+                  <input
+                    type="text"
+                    value={departmentForm.name}
+                    onChange={(e) => setDepartmentForm(prev => ({ ...prev, name: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Department Code *</label>
+                  <input
+                    type="text"
+                    value={departmentForm.code}
+                    onChange={(e) => setDepartmentForm(prev => ({ ...prev, code: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <textarea
+                    rows={3}
+                    value={departmentForm.description}
+                    onChange={(e) => setDepartmentForm(prev => ({ ...prev, description: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+
+                {error && (
+                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    {error}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateDepartment(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  disabled={creatingDepartment}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCreateDepartment}
+                  disabled={creatingDepartment}
+                  className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 disabled:bg-emerald-300"
+                >
+                  {creatingDepartment ? 'Creating...' : 'Create'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="flex justify-end space-x-4">
           <Link
