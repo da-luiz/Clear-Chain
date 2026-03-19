@@ -63,7 +63,9 @@ export default function CreateVendorRequestPage() {
         getDepartments(),
         getVendorCategories()
       ])
-      setDepartments(deptsData.filter(d => d.isActive))
+      // Do not hide departments only because they are inactive.
+      // If there are any departments in the system, the requester should be able to pick one.
+      setDepartments(deptsData)
       setCategories(categoriesData.filter(c => c.isActive))
     } catch (err) {
       console.error('Error loading data:', err)
@@ -80,23 +82,29 @@ export default function CreateVendorRequestPage() {
   }
   
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const files = e.target.files ? Array.from(e.target.files) : []
+    if (files.length === 0) return
     
     setUploadingFile(true)
     setError(null)
     
     try {
-      const uploadResult = await uploadFile(file)
-      const newDoc = {
-        type: 'file' as const,
-        value: uploadResult.url,
-        name: newDocName.trim() || file.name,
-        fileName: uploadResult.fileName
+      const createdDocs: Array<{type: string, value: string, name: string, fileName?: string}> = []
+      const displayName = newDocName.trim()
+
+      for (const file of files) {
+        const uploadResult = await uploadFile(file)
+        createdDocs.push({
+          type: 'file',
+          value: uploadResult.url,
+          name: displayName || file.name,
+          fileName: uploadResult.fileName,
+        })
       }
-      setSupportingDocs([...supportingDocs, newDoc])
+
+      setSupportingDocs(prev => [...prev, ...createdDocs])
       setNewDocName('')
-      e.target.value = '' // Reset file input
+      e.target.value = '' // Reset file input (so selecting the same file again works)
     } catch (err: any) {
       console.error('Error uploading file:', err)
       setError(getErrorMessage(err) || 'Failed to upload file')
@@ -111,17 +119,25 @@ export default function CreateVendorRequestPage() {
       return
     }
     
-    if (!newDocValue.trim()) {
+    const raw = newDocValue || ''
+    const values = raw
+      .split(/[\r\n,]+/g)
+      .map(v => v.trim())
+      .filter(Boolean)
+
+    if (values.length === 0) {
       setError('Please enter a value for the supporting document')
       return
     }
-    
-    const newDoc = {
+
+    const displayName = newDocName.trim()
+    const createdDocs = values.map((value) => ({
       type: newDocType,
-      value: newDocValue.trim(),
-      name: newDocName.trim() || newDocValue.trim()
-    }
-    setSupportingDocs([...supportingDocs, newDoc])
+      value,
+      name: displayName || value,
+    }))
+
+    setSupportingDocs(prev => [...prev, ...createdDocs])
     setNewDocValue('')
     setNewDocName('')
   }
@@ -538,6 +554,7 @@ export default function CreateVendorRequestPage() {
                     </label>
                     <input
                       type="file"
+                      multiple
                       onChange={handleFileUpload}
                       disabled={uploadingFile}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
@@ -561,17 +578,19 @@ export default function CreateVendorRequestPage() {
                 <>
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      URL
+                      URL(s)
                     </label>
-                    <input
+                    <textarea
                       key={`url-${newDocType}`}
-                      type="text"
+                      rows={3}
                       value={newDocValue}
                       onChange={(e) => setNewDocValue(e.target.value)}
                       placeholder={
-                        newDocType === 'github' ? 'https://github.com/user/repo' :
-                        newDocType === 'linkedin' ? 'https://linkedin.com/company/name' :
-                        'https://example.com'
+                        newDocType === 'github'
+                          ? 'https://github.com/user/repo\n(you can paste multiple, one per line)'
+                          : newDocType === 'linkedin'
+                            ? 'https://linkedin.com/company/name\n(you can paste multiple, one per line)'
+                            : 'https://example.com\n(you can paste multiple, one per line)'
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
@@ -621,12 +640,14 @@ export default function CreateVendorRequestPage() {
                 >
                   <option value="">Select a department *</option>
                   {departments.map(dept => (
-                    <option key={dept.id} value={dept.id}>{dept.name}</option>
+                    <option key={dept.id} value={dept.id}>
+                      {dept.name}{dept.isActive ? '' : ' (inactive)'}
+                    </option>
                   ))}
                 </select>
               ) : (
                 <div className="w-full px-3 py-2 border border-red-300 rounded-md bg-red-50 text-red-700">
-                  No departments available. Please create a department first.
+                  No departments found. Ask your Admin to create at least one department, then refresh this page.
                 </div>
               )}
             </div>
