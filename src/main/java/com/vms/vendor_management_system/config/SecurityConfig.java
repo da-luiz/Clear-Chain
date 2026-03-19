@@ -1,14 +1,17 @@
 package com.vms.vendor_management_system.config;
 
-import com.vms.vendor_management_system.application.security.OAuth2SuccessHandler;
+import com.vms.vendor_management_system.application.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,10 +28,10 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(OAuth2SuccessHandler oAuth2SuccessHandler) {
-        this.oAuth2SuccessHandler = oAuth2SuccessHandler;
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
@@ -38,18 +41,20 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // OAuth2 endpoints are public
-                .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
-                // ALL other endpoints are public - no authentication required
-                .anyRequest().permitAll()
+                // Public endpoints
+                .requestMatchers("/api/auth/login", "/api/bootstrap/**").permitAll()
+                .requestMatchers("/actuator/**").permitAll()
+                // Everything else requires a valid JWT
+                .anyRequest().authenticated()
             );
 
-        // Always enable OAuth2 login - will work if credentials are in application-local.properties
-        // or environment variables. If no credentials, EmptyClientRegistrationRepository handles it.
-        http.oauth2Login(oauth2 -> oauth2
-            .successHandler(oAuth2SuccessHandler)
-            .permitAll()
+        // When no/invalid JWT is provided, return 401 instead of 403.
+        http.exceptionHandling(ex -> ex
+                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
         );
+
+        // Validate Bearer JWT and set SecurityContext.
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

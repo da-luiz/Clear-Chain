@@ -11,7 +11,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * and {@link com.vms.vendor_management_system.config.OAuth2ClientConfig}.
  */
 @SpringBootApplication(exclude = {
-        org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientAutoConfiguration.class,
         org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration.class
 })
 public class VendorManagementSystemApplication {
