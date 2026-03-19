@@ -20,6 +20,7 @@ import java.util.List;
  */
 @Configuration
 public class OAuth2ClientConfig {
+    private static final String DISABLED_OAUTH2_VALUE = "__DISABLED__";
 
     @Bean
     @Primary
@@ -29,7 +30,10 @@ public class OAuth2ClientConfig {
         // Build Google registration if client ID is not empty
         if (properties.getRegistration().containsKey("google")) {
             OAuth2ClientProperties.Registration googleReg = properties.getRegistration().get("google");
-            if (googleReg != null && googleReg.getClientId() != null && !googleReg.getClientId().trim().isEmpty()) {
+            if (googleReg != null
+                    && googleReg.getClientId() != null
+                    && !googleReg.getClientId().trim().isEmpty()
+                    && !DISABLED_OAUTH2_VALUE.equals(googleReg.getClientId().trim())) {
                 ClientRegistration googleRegistration = buildGoogleRegistration(googleReg, properties.getProvider().get("google"));
                 if (googleRegistration != null) {
                     registrations.add(googleRegistration);
@@ -40,7 +44,10 @@ public class OAuth2ClientConfig {
         // Build GitHub registration if client ID is not empty
         if (properties.getRegistration().containsKey("github")) {
             OAuth2ClientProperties.Registration githubReg = properties.getRegistration().get("github");
-            if (githubReg != null && githubReg.getClientId() != null && !githubReg.getClientId().trim().isEmpty()) {
+            if (githubReg != null
+                    && githubReg.getClientId() != null
+                    && !githubReg.getClientId().trim().isEmpty()
+                    && !DISABLED_OAUTH2_VALUE.equals(githubReg.getClientId().trim())) {
                 ClientRegistration githubRegistration = buildGitHubRegistration(githubReg, properties.getProvider().get("github"));
                 if (githubRegistration != null) {
                     registrations.add(githubRegistration);
@@ -51,7 +58,10 @@ public class OAuth2ClientConfig {
         // Build Azure registration if client ID is not empty
         if (properties.getRegistration().containsKey("azure")) {
             OAuth2ClientProperties.Registration azureReg = properties.getRegistration().get("azure");
-            if (azureReg != null && azureReg.getClientId() != null && !azureReg.getClientId().trim().isEmpty()) {
+            if (azureReg != null
+                    && azureReg.getClientId() != null
+                    && !azureReg.getClientId().trim().isEmpty()
+                    && !DISABLED_OAUTH2_VALUE.equals(azureReg.getClientId().trim())) {
                 ClientRegistration azureRegistration = buildAzureRegistration(azureReg, properties.getProvider().get("azure"));
                 if (azureRegistration != null) {
                     registrations.add(azureRegistration);
@@ -86,7 +96,9 @@ public class OAuth2ClientConfig {
     }
     
     private ClientRegistration buildGoogleRegistration(OAuth2ClientProperties.Registration reg, OAuth2ClientProperties.Provider provider) {
-        if (reg.getClientId() == null || reg.getClientId().trim().isEmpty() || 
+        if (reg.getClientId() == null || reg.getClientId().trim().isEmpty()
+                || DISABLED_OAUTH2_VALUE.equals(reg.getClientId().trim())
+                ||
             reg.getClientSecret() == null || reg.getClientSecret().trim().isEmpty()) {
             return null;
         }
@@ -124,7 +136,9 @@ public class OAuth2ClientConfig {
     }
     
     private ClientRegistration buildGitHubRegistration(OAuth2ClientProperties.Registration reg, OAuth2ClientProperties.Provider provider) {
-        if (reg.getClientId() == null || reg.getClientId().trim().isEmpty() || 
+        if (reg.getClientId() == null || reg.getClientId().trim().isEmpty()
+                || DISABLED_OAUTH2_VALUE.equals(reg.getClientId().trim())
+                ||
             reg.getClientSecret() == null || reg.getClientSecret().trim().isEmpty()) {
             return null;
         }
@@ -162,7 +176,9 @@ public class OAuth2ClientConfig {
     }
     
     private ClientRegistration buildAzureRegistration(OAuth2ClientProperties.Registration reg, OAuth2ClientProperties.Provider provider) {
-        if (reg.getClientId() == null || reg.getClientId().trim().isEmpty() || 
+        if (reg.getClientId() == null || reg.getClientId().trim().isEmpty()
+                || DISABLED_OAUTH2_VALUE.equals(reg.getClientId().trim())
+                ||
             reg.getClientSecret() == null || reg.getClientSecret().trim().isEmpty()) {
             return null;
         }
