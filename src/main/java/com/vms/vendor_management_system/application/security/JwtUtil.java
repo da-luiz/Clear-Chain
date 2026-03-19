@@ -20,7 +20,9 @@ public class JwtUtil {
     @Value("${jwt.secret:mySecretKeyForVendorManagementSystemThatIsAtLeast256BitsLongForHS256Algorithm}")
     private String secret;
 
-    @Value("${jwt.expiration:86400000}") // 24 hours in milliseconds
+    // JWT expiration is configured as SECONDS in application.properties / env.
+    // (e.g. JWT_EXPIRATION=86400 means 24 hours)
+    @Value("${jwt.expiration:86400}") // seconds
     private Long expiration;
 
     private SecretKey getSigningKey() {
@@ -30,7 +32,7 @@ public class JwtUtil {
 
     public String generateToken(String username) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expiration);
+        Date expiryDate = new Date(now.getTime() + (expiration * 1000));
 
         return Jwts.builder()
                 .subject(username)
